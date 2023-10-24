@@ -1,0 +1,10 @@
+export const SIGNUP = '/user/signup'
+export const LOGIN = '/user/login'
+export const VERIFY_OTP = "/user/verifyOTP"
+export const PROFILE = "/user/getUser"
+export const PROFILE_UPDATE = "user/update"
+export const ISSUE_CREATION = "/issue/create"
+export const GET_ISSUES = "/issue/getIssues"
+export const GET_ISSUE = "/issue/getIssue"
+export const GET_CATEGORIES = "/category/getCategories"
+export const GET_TRENDING_NEWS = "/trandingNews/get"
