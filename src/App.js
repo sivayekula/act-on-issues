@@ -21,7 +21,7 @@ export default function App() {
       dispatch(setUserData(userData))
     }
     dispatch(fetchCategories())
-  },[dispatch])
+  },[])
   
   return (
      <BrowserRouter>
