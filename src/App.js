@@ -21,6 +21,7 @@ export default function App() {
       dispatch(setUserData(userData))
     }
     dispatch(fetchCategories())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   },[authToken])
   
   return (
