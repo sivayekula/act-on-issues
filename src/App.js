@@ -14,14 +14,14 @@ import Profile from './components/Profile';
 export default function App() {
   const dispatch = useDispatch()
 
+  const authToken = localStorage.getItem("token")
   useEffect(()=>{
-    const authToken = localStorage.getItem("token")
     if(authToken){
       const userData = jwt(authToken)
       dispatch(setUserData(userData))
     }
     dispatch(fetchCategories())
-  },[])
+  },[authToken])
   
   return (
      <BrowserRouter>
