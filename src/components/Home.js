@@ -7,12 +7,33 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import moment from 'moment-timezone';
 import { useNavigate } from 'react-router-dom';
 import '../App.css';
 import Header from './Header';
 import { useDispatch, useSelector } from 'react-redux';
 import { fecthIssues, fecthTrendingNews } from '../app/reducers/issueSlice';
 import AppConstants from '../AppConstants';
+
+const generalIssues= [
+  "Illiteracy",
+  "Basic Sanitation",
+  "Poverty",
+  "Pollution",
+  "Public Transportation",
+  "Urban Waste Management",
+  "Water Management",
+  "Infrastructure",
+  "Unemployment", 
+  "Education System",
+  "Caste",
+  "Child Labour",
+  "Gender Inequity", 
+  "Religious Disputes",
+  "Corruption",
+  "Healthcare System",
+  "Agricultural Distress",
+  "Women’s Safety"]
 
 function Home() {
   const dispatch = useDispatch()
@@ -61,88 +82,28 @@ function Home() {
                           
                       </div>
                     </div>
-                    {/* General news card 
+                    {/* General news card */}
                     <div className='news-card'>
                       <h5 className='card-title'>General Issues</h5>
                       <div className='d-flex aoi-gap-1 news-list-items-blk'>
+                      {generalIssues.map( (isue, indx)=> (
                           <div className='d-flex aoi-gap-off align-items-center news-list-item'>
                               <a href='#' className='news-link'>
-                                <div className='news-img-blk'>
+                                {/* <div className='news-img-blk'>
                                   <img
                                       src="./news1.jpg"
                                       className="news-img"
                                       alt="news title image"
                                     />
-                                </div>
+                                </div> */}
                                 <div className='news-content-blk'>
-                                    <h3 className='news-title'>News1 Trending title content here</h3>
-                                    <p className='news-content'>Description text dummy text her dsds</p>
+                                    <h3 className='news-title' key={indx}>{isue}</h3>
+                                    {/* <p className='news-content'>Description text dummy text her dsds</p> */}
                                 </div>
                               </a>
-                          </div>
-                          <div className='d-flex aoi-gap-off align-items-center news-list-item'>
-                            <a href='#' className='news-link'>
-                                <div className='news-img-blk'>
-                                  <img
-                                      src="./NoImage.png"
-                                      className="news-img"
-                                      alt="news title image"
-                                    />
-                                </div>
-                                <div className='news-content-blk'>
-                                    <h3 className='news-title'>News2 Trending title</h3>
-                                    <p className='news-content'>Description text dummy text her dsds</p>
-                                </div>
-                              </a>
-                          </div>
-                          <div className='d-flex aoi-gap-off align-items-center news-list-item'>
-                              <a href='#' className='news-link'>
-                                <div className='news-img-blk'>
-                                  <img
-                                      src="./driange-issue.jpg"
-                                      className="news-img"
-                                      alt="news title image"
-                                    />
-                                </div>
-                                <div className='news-content-blk'>
-                                    <h3 className='news-title'>News3 Trending title here</h3>
-                                    <p className='news-content'>Description text dummy text her dsds</p>
-                                </div>
-                              </a>
-                          </div>
-                          <div className='d-flex aoi-gap-off align-items-center news-list-item'>
-                              <a href='#' className='news-link'>
-                                <div className='news-img-blk'>
-                                  <img
-                                      src="./Swachh-Bharat-issue1.jpg"
-                                      className="news-img"
-                                      alt="news title image"
-                                    />
-                                </div>
-                                <div className='news-content-blk'>
-                                    <h3 className='news-title'>News4 Trending title here</h3>
-                                    <p className='news-content'>Description text dummy text her dsds</p>
-                                </div>
-                              </a>
-                          </div>
-                          <div className='d-flex aoi-gap-off align-items-center news-list-item'>
-                              <a href='#' className='news-link'>
-                                <div className='news-img-blk'>
-                                  <img
-                                      src="./news1.jpg"
-                                      className="news-img"
-                                      alt="news title image"
-                                    />
-                                </div>
-                                <div className='news-content-blk'>
-                                    <h3 className='news-title'>News4 Trending here</h3>
-                                    <p className='news-content'>Description text dummy text her dsds</p>
-                                </div>
-                              </a>
-                          </div>
-                          
+                          </div> ))}                       
                       </div>
-                    </div> */}
+                    </div> 
                 </div>
                 <div className='center-issues-cards-main-blk'>
                   {/* Header Search block */} 
@@ -331,8 +292,11 @@ function Home() {
 
                   {/* Issues card */} 
                   <div className='issues-cards-list-blk d-flex flex-column aoi-gap-1'>
-                    {issues.map(issue=> (
-                      <div className='news-card issue-info-card'>
+                    {issues.map(issue=>{
+                      let duration = moment.duration(moment().diff(issue.created_at))
+                      let hours = duration.asHours();
+                      return(
+                        <div className='news-card issue-info-card'>
                             <div className='d-flex aoi-gap-1 p-3' onClick={gotoDetails}>
                               <div className='left-issue-card-info-blk'>
                                 <h3 className='news-title'>{issue.title}</h3>
@@ -343,7 +307,13 @@ function Home() {
                                             className="issue-type-icon"
                                             alt="news title image"
                                         />
-                                        <span className='issue-type-info-txt'><span>by moon</span> - <span>14h ago</span></span>
+                                        <span className='issue-type-info-txt'>
+                                          <span>
+                                          { 
+                                            hours > 24 ? moment(issue.created_at).format("dddd MM, YYYY") : hours+"H ago"
+                                          }
+                                          </span>
+                                        </span>
                                     </div>
                                     <div className='issue-icon-item d-flex align-items-center aoi-gap-off'>
                                         <img
@@ -351,7 +321,7 @@ function Home() {
                                             className="issue-type-icon"
                                             alt="news title image"
                                         />
-                                        <span className='issue-type-info-txt'>General</span>
+                                        <span className='issue-type-info-txt'>{issue.categoryId[0].name}</span>
                                     </div>
                                     <div className='issue-icon-item d-flex align-items-center aoi-gap-off'>
                                         <img
@@ -414,7 +384,9 @@ function Home() {
                                 <Button variant="link" className='txt-btn'>Acknowledge</Button>
                                 </div>
                             </div>
-                      </div> ))}
+                      </div> 
+                      )
+                    })}
                   </div>
 
                 </div>

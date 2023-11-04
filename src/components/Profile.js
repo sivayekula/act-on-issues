@@ -159,6 +159,7 @@ function Profile() {
 							</div>    
 						</div>
 						<div className='profile-form-blk'>
+							{console.log(profile)}
 							<Form>
 								<Form.Group className="mb-3" controlId="username">
 									<Form.Label>User Name</Form.Label>

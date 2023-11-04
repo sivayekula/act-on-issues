@@ -44,12 +44,13 @@ export const fetchCategories = createAsyncThunk("user/fetchCategories",async()=>
 
 const makeProfileObj = (data) =>{
       return  {
-        _id:data._id ,
-        name:data.name ,
-        mobile:data.mobile ,
+        _id:data._id,
+        name:data.name,
+        email: data.email,
+        mobile:data.mobile,
         role :data.role,
         status :data.status,
-        profile_pic:data.profile_pic ,
+        profile_pic:data.profile_pic,
         address:data.address,
         gender:data.gender, 
         identity_proof:data.identity_proof }
