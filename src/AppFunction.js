@@ -1,3 +1,4 @@
+import moment from "moment-timezone";
 import { toast } from "react-hot-toast";
 
 const textValidator = (text)=>{
@@ -89,6 +90,32 @@ export const convertBase64 = (file) => {
         reject(error);
       }
     })
+}
+
+export const getTime = (postTimestamp) =>{
+    const now = moment();
+    const postTime = moment(postTimestamp);
+
+    const diffMinutes = now.diff(postTime, 'minutes');
+    const diffHours = now.diff(postTime, 'hours');
+    const diffDays = now.diff(postTime, 'days');
+    const diffWeeks = now.diff(postTime, 'weeks');
+   
+    let timeSincePosted = ''
+    if (diffMinutes < 1) {
+        timeSincePosted = 'Now';
+    } else if (diffMinutes < 60) {
+        timeSincePosted = `${diffMinutes} mins ago`;
+    } else if (diffHours < 24) {
+        timeSincePosted = postTime.format('h:mm A');
+    } else if (diffDays < 7) {
+        timeSincePosted = postTime.format('ddd');
+    } else if (diffWeeks < 52) {
+        timeSincePosted = postTime.format('MMM D');
+    } else {
+        timeSincePosted = postTime.format('MMM D, YYYY');
+    }
+    return timeSincePosted
 }
 
 export default textValidator;

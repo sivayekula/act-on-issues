@@ -117,7 +117,7 @@ const Signup = ({show, handleClose}) =>{
     <Modal centered show={show} onHide={handleHide} className='signup-modal'>
       <Modal.Header closeButton></Modal.Header>
         <Modal.Body className='signup-modal-padding'>
-          <img src="./logo-new.svg" className="signup-logo" alt="aoi logo"/>
+          <img src="/logo-new.svg" className="signup-logo" alt="aoi logo"/>
           {showOtp?
 					<OTPForm otp={otp} handleChange={(data)=>setOtp(data)} verifyOtp={verifyOtp} userObj={inputsData} resendOtp={handleSignup}/>:
 					<>

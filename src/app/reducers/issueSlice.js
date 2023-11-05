@@ -1,11 +1,12 @@
 
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { APIAlertNotify, alertNotify } from "../../AppFunction";
-import {getIssues, getTrendingNews } from "../../components/APIServices/AppAPI";
+import {getIssueDetails, getIssues, getTrendingNews } from "../../components/APIServices/AppAPI";
 
 const initialState = {
     trendingNews:[],
-    issues:[]
+    issues:[],
+    issueDetails:null
 }
  
 
@@ -35,7 +36,18 @@ export const fecthIssues = createAsyncThunk("issue/fecthIssues",async()=>{
     }
 })
 
- 
+export const fecthIssueDetails = createAsyncThunk("issue/fecthIssueDetails",async(issueId)=>{
+    try{
+        const res = await getIssueDetails(issueId)
+        if(res.status === 200){
+            return res.data.data
+        }else{
+            throw new Error(res)
+        }
+    }catch(error){
+        APIAlertNotify(error)
+    }
+})
 
  
 export const issueSlice = createSlice({
@@ -54,6 +66,10 @@ export const issueSlice = createSlice({
         builder.addCase(fecthIssues.fulfilled,(state,{payload})=>{
             state.isLoading = false
             state.issues = payload
+        });
+        builder.addCase(fecthIssueDetails.fulfilled,(state,{payload})=>{
+            state.isLoading = false
+            state.issueDetails = payload
         });
     }
 });

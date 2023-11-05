@@ -28,7 +28,7 @@ export default function App() {
      <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/details" element={<DetailsScreen />} />
+        <Route path="/details/:issueId" element={<DetailsScreen />} />
         <Route path="/profile" element={<Profile />} />
       </Routes>
     </BrowserRouter>

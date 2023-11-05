@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
@@ -16,7 +16,7 @@ import Login from './common/Login';
 import RaiseIssue from './common/RaiseIssue';
 import Signup from './common/Signup';
 
-const Header = () => {
+const Header = ({signup= false, login= false}) => {
   const authUser = useSelector((state)=>state.userData.user)
   const dispatch = useDispatch()
   const formObj = {signup:false,login:false,raiseIssue:false}
@@ -46,6 +46,9 @@ const Header = () => {
       handleShow(AppConstants.LOGIN, true)
     }
   }
+  useEffect(()=>{
+    setShowForm({...formObj, login: login})
+  }, [login])
    
    
 
@@ -58,12 +61,12 @@ const Header = () => {
             <Container fluid>
               <Navbar.Brand onClick={()=>gotoURl("/")}>
                 <img
-                  src="./logo-new.svg"
+                  src="/logo-new.svg"
                   className="align-top logo-header hide-on-mobile"
                   alt="Act on issues"
                 />
                 <img
-                  src="./logo-icon.jpeg"
+                  src="/logo-icon.jpeg"
                   className="align-top logo-header hide-on-web show-on-mobile"
                   alt="Act on issues"
                 />
@@ -74,7 +77,7 @@ const Header = () => {
                   <Dropdown align="start" >
                     <Dropdown.Toggle id="dropdown-basic" className='icon-dropdown notificaation-dropdown'>
                       <img
-                        src="./NotificationIcon.svg"
+                        src="/NotificationIcon.svg"
                         className="d-inline-block align-top"
                         alt="Notifications"
                       />
@@ -135,7 +138,7 @@ const Header = () => {
                   <Dropdown align="start" >
                     <Dropdown.Toggle id="dropdown-basic" className='icon-dropdown profile-dropdown'>
                     <img
-                        src="./ProfilePicDefaultIcon.svg"
+                        src="/ProfilePicDefaultIcon.svg"
                         className="d-inline-block align-top profile-defulat-icon"
                         alt="Aoi Proifle"
                       />
@@ -143,7 +146,7 @@ const Header = () => {
                     <Dropdown.Menu className='profile-dropdown-menu thing-scrollbar' >
                       <Dropdown.Item className='d-flex align-items-center' onClick={()=>gotoURl("/profile")}> 
                         <img
-                          src="./ProfileLineIcon.svg"
+                          src="/ProfileLineIcon.svg"
                           className="d-inline-block pe-2"
                           alt="Aoi Proifle"
                         />
@@ -151,7 +154,7 @@ const Header = () => {
                       </Dropdown.Item>
                       <Dropdown.Item className='d-flex align-items-center' onClick={logOut}> 
                         <img
-                          src="./LogoutIcon.svg"
+                          src="/LogoutIcon.svg"
                           className="d-inline-block pe-2"
                           alt="Aoi Proifle"
                         />
@@ -175,7 +178,7 @@ const Header = () => {
               <Navbar.Offcanvas id="responsive-navbar-nav">
                 <Offcanvas.Header closeButton>
                   <img
-                    src="./logo-new.svg"
+                    src="/logo-new.svg"
                     className="d-inline-block align-top logo-header"
                     alt="Act on issues"
                   />
@@ -194,11 +197,11 @@ const Header = () => {
                 </Offcanvas.Body>
               </Navbar.Offcanvas>
               <Nav className='social-icons-blk'>
-                <Nav.Link href="#"><img src="./Pinterest.svg" className="" alt="React Bootstrap logo"/></Nav.Link>
-                <Nav.Link href="#"><img src="./Twitter.svg" className="" alt="React Bootstrap logo"/></Nav.Link>
-                <Nav.Link href="#"><img src="./Youtube.svg" className="" alt="React Bootstrap logo"/></Nav.Link>
-                <Nav.Link href="#"><img src="./Instagram.svg" className="" alt="React Bootstrap logo"/></Nav.Link>
-                <Nav.Link href="#"><img src="./Facebook.svg" className="" alt="React Bootstrap logo"/></Nav.Link>
+                <Nav.Link href="#"><img src="/Pinterest.svg" className="" alt="React Bootstrap logo"/></Nav.Link>
+                <Nav.Link href="#"><img src="/Twitter.svg" className="" alt="React Bootstrap logo"/></Nav.Link>
+                <Nav.Link href="#"><img src="/Youtube.svg" className="" alt="React Bootstrap logo"/></Nav.Link>
+                <Nav.Link href="#"><img src="/Instagram.svg" className="" alt="React Bootstrap logo"/></Nav.Link>
+                <Nav.Link href="#"><img src="/Facebook.svg" className="" alt="React Bootstrap logo"/></Nav.Link>
               </Nav>
             </Container>
           </Navbar>

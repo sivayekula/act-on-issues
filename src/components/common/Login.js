@@ -95,7 +95,7 @@ const Login = ({show, handleClose}) =>{
     <Modal centered show={show} onHide={handleHide} className='signup-modal'>
       <Modal.Header closeButton></Modal.Header>
         <Modal.Body className='signup-modal-padding'>
-          <img src="./logo-new.svg" className="signup-logo" alt="aoi logo"/>
+          <img src="/logo-new.svg" className="signup-logo" alt="aoi logo"/>
           <h1 className='signup-modal-title'>Login</h1>
           <div className='signup-form-blk'>
             <Form>

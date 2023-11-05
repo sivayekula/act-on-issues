@@ -36,3 +36,10 @@ export const getCategories = async()=>{
 export const getTrendingNews = async()=>{
     return await backendAPI.get(URL.GET_TRENDING_NEWS)
 }
+
+export const saveComment = async(payload)=>{
+    return await backendAPI.post(URL.SAVE_COMMENT, payload)
+}
+export const getComments = async(issueId)=>{
+    return await backendAPI.get(URL.SAVE_COMMENT+"/"+issueId)
+}

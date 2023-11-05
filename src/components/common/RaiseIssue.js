@@ -13,19 +13,17 @@ import VALIDATION_MESSAGES from '../../MessageConstants';
 
 const RaiseIssue = ({show, handleClose}) =>{
   const categories = useSelector((state)=>state.userData.categories)
-  const emptyObj = {title:"", description:"", category:"", address:"",images:[]}
+  const emptyObj = {title:"", description:"", category:"", address:"",images:[], other:''}
   const [ issueObj, setIsueObj] = useState({...emptyObj})
   
   const handleHide = () =>{
     handleClose(AppConstants.RAISE_ISSUE,false)
     setIsueObj({...emptyObj})
   }
-
- 
   
   const handleChange = (e) =>{
     let {value, name} = e.target
-    setIsueObj({...issueObj,[name]:value})
+    setIsueObj({...issueObj,[name]:value,...(name==='category'&&{other:''})})
   }
 
   const handlePlace = (value) =>{
@@ -38,11 +36,14 @@ const RaiseIssue = ({show, handleClose}) =>{
 
   const getValidate = () =>{
     let valid = false
+    
     if(issueObj.title.length>=10 &&
       issueObj.description.length>=15 &&
       issueObj.address!=="" &&
       issueObj.category.length>1 &&
-      issueObj.images.length>0){
+      issueObj.images.length>0 &&
+      showOther(true)
+      ){
       valid = true
     }
     return !valid
@@ -89,6 +90,23 @@ const RaiseIssue = ({show, handleClose}) =>{
     }
 	}
 
+  const showOther = (flag=false) =>{
+    const selCat = categories.filter(cat=>cat._id === issueObj.category)
+    let result = false
+    if(flag){
+      if(selCat.length>0){
+        if(selCat[0].name === 'Other'){
+          result = issueObj.other.length > 3
+        }else{
+          result = true
+        }
+      }
+    }else{
+      result =  selCat.length>0&&selCat[0].name === 'Other'
+    }
+    return result
+  }
+
    
 
   return(<>
@@ -129,7 +147,13 @@ const RaiseIssue = ({show, handleClose}) =>{
                   name="category" 
                   onChange={handleChange}
                   placeholder="-Select-"/>
-                 
+                {showOther()&&
+                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                  <Form.Label>Other <span className='required'>*</span></Form.Label>
+                  <Form.Control type="text" name="other" value={issueObj.other} onChange={handleChange}/>
+                </Form.Group>
+                }
+                
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                   <Form.Label>Images</Form.Label>
                   <Form.Control type="file" 

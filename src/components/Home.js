@@ -13,27 +13,10 @@ import '../App.css';
 import Header from './Header';
 import { useDispatch, useSelector } from 'react-redux';
 import { fecthIssues, fecthTrendingNews } from '../app/reducers/issueSlice';
-import AppConstants from '../AppConstants';
+import AppConstants, { GENERAL_ISSUES } from '../AppConstants';
+import { getTime } from '../AppFunction';
 
-const generalIssues= [
-  "Illiteracy",
-  "Basic Sanitation",
-  "Poverty",
-  "Pollution",
-  "Public Transportation",
-  "Urban Waste Management",
-  "Water Management",
-  "Infrastructure",
-  "Unemployment", 
-  "Education System",
-  "Caste",
-  "Child Labour",
-  "Gender Inequity", 
-  "Religious Disputes",
-  "Corruption",
-  "Healthcare System",
-  "Agricultural Distress",
-  "Women’s Safety"]
+
 
 function Home() {
   const dispatch = useDispatch()
@@ -42,8 +25,8 @@ function Home() {
   const [startDate, setStartDate] = useState(new Date());
   const navigate = useNavigate()
 
-  const gotoDetails = () =>{
-    navigate("/details")
+  const gotoDetails = (issueId) =>{
+    navigate(`/details/${issueId}`)
   }
 
   useEffect(()=>{
@@ -51,7 +34,6 @@ function Home() {
     dispatch(fecthIssues())
   },[])
 
-  console.log(issues,"issues")
   return (
     <div className='main-page'>
       <Header/>
@@ -62,7 +44,7 @@ function Home() {
                     <div className='news-card'>
                       <h5 className='card-title'>Trending / Issues</h5>
                       <div className='d-flex aoi-gap-1 news-list-items-blk'>
-                        {trendingNews.map(news=>(
+                        {trendingNews.slice(0, 5).map(news=>(
                           <div className='d-flex aoi-gap-off align-items-center news-list-item'>
                             <a href={AppConstants.TRENDING_NEWS_URL} className='news-link' target="_blank">
                               <div className='news-img-blk'>
@@ -86,7 +68,7 @@ function Home() {
                     <div className='news-card'>
                       <h5 className='card-title'>General Issues</h5>
                       <div className='d-flex aoi-gap-1 news-list-items-blk'>
-                      {generalIssues.map( (isue, indx)=> (
+                      {GENERAL_ISSUES.slice(0, 5).map( (isue, indx)=> (
                           <div className='d-flex aoi-gap-off align-items-center news-list-item'>
                               <a href='#' className='news-link'>
                                 {/* <div className='news-img-blk'>
@@ -293,11 +275,10 @@ function Home() {
                   {/* Issues card */} 
                   <div className='issues-cards-list-blk d-flex flex-column aoi-gap-1'>
                     {issues.map(issue=>{
-                      let duration = moment.duration(moment().diff(issue.created_at))
-                      let hours = duration.asHours();
+                       
                       return(
                         <div className='news-card issue-info-card'>
-                            <div className='d-flex aoi-gap-1 p-3' onClick={gotoDetails}>
+                            <div className='d-flex aoi-gap-1 p-3' onClick={()=>{gotoDetails(issue._id)}}>
                               <div className='left-issue-card-info-blk'>
                                 <h3 className='news-title'>{issue.title}</h3>
                                 <div className='issue-type-icons-blk d-flex align-items-center'>
@@ -310,7 +291,7 @@ function Home() {
                                         <span className='issue-type-info-txt'>
                                           <span>
                                           { 
-                                            hours > 24 ? moment(issue.created_at).format("dddd MM, YYYY") : hours+"H ago"
+                                            getTime(issue.created_at)
                                           }
                                           </span>
                                         </span>
@@ -353,7 +334,7 @@ function Home() {
                                             className="issue-type-icon"
                                             alt="news title image"
                                         />
-                                        <span className='issue-type-info-txt'><span>Comments</span><span>(22)</span></span>
+                                        <span className='issue-type-info-txt'><span>Comments</span><span>({issue.commentsCount})</span></span>
                                     </div>
                                     <div className='issue-icon-item d-flex align-items-center aoi-gap-off'>
                                         <img
@@ -361,7 +342,7 @@ function Home() {
                                             className="card-flag-icon"
                                             alt="news title image"
                                         />
-                                        <span className='issue-type-info-txt'><span>Flag</span><span>(22)</span></span>
+                                        <span className='issue-type-info-txt'><span>Flag</span><span>({issue.flagsCount})</span></span>
                                     </div>
                                     <div className='issue-icon-item d-flex align-items-center aoi-gap-off'>
                                         <img

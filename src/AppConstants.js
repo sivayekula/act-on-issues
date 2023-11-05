@@ -1,11 +1,30 @@
 const AppConstants = {
     SIGNUP:'signup',
     LOGIN:"login",
-    USERNAME_LENGTH:20,
+    USERNAME_LENGTH:200,
     PHONE_LENGTH:10,
     RAISE_ISSUE:"raiseIssue",
     TRENDING_NEWS_URL:"https://www.globalissues.org/news"
 
 }
+export const GENERAL_ISSUES= [
+    "Illiteracy",
+    "Basic Sanitation",
+    "Poverty",
+    "Pollution",
+    "Public Transportation",
+    "Urban Waste Management",
+    "Water Management",
+    "Infrastructure",
+    "Unemployment", 
+    "Education System",
+    "Caste",
+    "Child Labour",
+    "Gender Inequity", 
+    "Religious Disputes",
+    "Corruption",
+    "Healthcare System",
+    "Agricultural Distress",
+    "Women’s Safety"]
 export const FILE_ACCEPTED_FORMATS = ['png',"jpeg","jpg"]
 export default AppConstants;
