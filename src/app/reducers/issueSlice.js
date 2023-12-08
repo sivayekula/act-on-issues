@@ -64,8 +64,9 @@ export const issueSlice = createSlice({
             state.trendingNews = payload
         });
         builder.addCase(fecthIssues.fulfilled,(state,{payload})=>{
+            console.log(payload,"payload")
             state.isLoading = false
-            state.issues = payload
+            state.issues = payload?payload:[]
         });
         builder.addCase(fecthIssueDetails.fulfilled,(state,{payload})=>{
             state.isLoading = false

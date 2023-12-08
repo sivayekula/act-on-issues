@@ -12,8 +12,6 @@ import { fetchProfileDetails, setProfileData } from "../app/reducers/userSlice";
 import VerifyForm from "./common/verifyForm";
 
 
-
-
 function Profile() {
 	const navigate = useNavigate()
 	const dispatch = useDispatch()
@@ -41,12 +39,12 @@ function Profile() {
 		updateProfile({...profile,address:{...value, lat_lng:{lat:lat, lng:lng}}})})
 	}
 
-	const makePayload = ()=>{
+	const makePayload = (flag=false)=>{
 		let payload = {}
 		if(profileData.name !== profile.name){
 			payload.name = profile.name
 		}
-		if(profileData.profile_pic !== proImg && !proImg.includes(process.env.REACT_APP_PROFILE_URL)){
+		if(proImg&& proImg.includes("base64")){
 			payload.profile_pic = proImg
 		}
 		if(profileData.gender !== profile.gender){
@@ -55,10 +53,14 @@ function Profile() {
 		if(profileData.address?.label !== profile.address?.label){
 			payload.address = profile.address
 		}
-		if(profileData.identity_proof !== idFiles && !idFiles.includes(process.env.REACT_APP_PROFILE_URL)){
+		if(idFiles&&idFiles.includes("base64")){
 			payload.identity_proof = idFiles
 		}
-		return payload
+		if(flag){
+			return Object.keys(payload).length == 0
+		}else{
+			return payload
+		}
 	}
 
 	const handleSubmit = async () =>{
@@ -123,7 +125,7 @@ function Profile() {
 		}
 	},[])
 
-	useEffect(()=>{
+	useEffect(()=>{ console.log(profileData)
 		updateProfile({...profileData})
 		if(profileData?.profile_pic){
 			setProImg(process.env.REACT_APP_PROFILE_URL+"/users/"+profileData?.profile_pic)
@@ -159,7 +161,6 @@ function Profile() {
 							</div>    
 						</div>
 						<div className='profile-form-blk'>
-							{console.log(profile)}
 							<Form>
 								<Form.Group className="mb-3" controlId="username">
 									<Form.Label>User Name</Form.Label>
@@ -243,7 +244,7 @@ function Profile() {
 
 								<div className='profile-form-btns-blk d-flex justify-content-end gap-3'>
 									<Button type="button" className='aoi-secondary-btn box-btn' onClick={gotoURl}>Cancel</Button>
-									<Button type="button" className='aoi-primary-btn' onClick={handleSubmit}>Save</Button>
+									<Button type="button" className='aoi-primary-btn' onClick={handleSubmit} disabled={makePayload(true)}>Save</Button>
 								</div>
 							</Form>
 						</div>

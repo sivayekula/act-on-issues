@@ -302,7 +302,7 @@ function Home() {
                                             className="issue-type-icon"
                                             alt="news title image"
                                         />
-                                        <span className='issue-type-info-txt'>{issue.categoryId[0].name}</span>
+                                        <span className='issue-type-info-txt'>{issue.categoryId.name}</span>
                                     </div>
                                     <div className='issue-icon-item d-flex align-items-center aoi-gap-off'>
                                         <img

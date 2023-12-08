@@ -12,9 +12,9 @@ import GooglePlacesAutocomplete,{getLatLng, geocodeByAddress} from 'react-google
 import VALIDATION_MESSAGES from '../../MessageConstants';
 
 const RaiseIssue = ({show, handleClose}) =>{
-  const categories = useSelector((state)=>state.userData.categories)
-  const emptyObj = {title:"", description:"", category:"", address:"",images:[], other:''}
-  const [ issueObj, setIsueObj] = useState({...emptyObj})
+  const categories = useSelector((state) => state.userData.categories)
+  const emptyObj = {title:"", description:"", category:"", address:"",images:[], other:'',isSwathyaBharat:false}
+  const [issueObj, setIsueObj] = useState({...emptyObj})
   
   const handleHide = () =>{
     handleClose(AppConstants.RAISE_ISSUE,false)
@@ -35,15 +35,14 @@ const RaiseIssue = ({show, handleClose}) =>{
   }
 
   const getValidate = () =>{
-    let valid = false
-    
+    let valid = false    
     if(issueObj.title.length>=10 &&
       issueObj.description.length>=15 &&
       issueObj.address!=="" &&
-      issueObj.category.length>1 &&
+      (issueObj.isSwathyaBharat||issueObj.category.length>1) &&
       issueObj.images.length>0 &&
       showOther(true)
-      ){
+    ){
       valid = true
     }
     return !valid
@@ -63,6 +62,7 @@ const RaiseIssue = ({show, handleClose}) =>{
       APIAlertNotify(error)
     }
   }
+
   const getCategoryValues = () =>{
     return categories.map(cat=>({label:cat.name,value:cat._id}))
   }
@@ -94,12 +94,16 @@ const RaiseIssue = ({show, handleClose}) =>{
     const selCat = categories.filter(cat=>cat._id === issueObj.category)
     let result = false
     if(flag){
-      if(selCat.length>0){
-        if(selCat[0].name === 'Other'){
-          result = issueObj.other.length > 3
-        }else{
-          result = true
+      if(!issueObj.isSwathyaBharat){
+        if(selCat.length>0){
+          if(selCat[0].name === 'Other'){
+            result = issueObj.other.length > 3
+          }else{
+            result = true
+          }
         }
+      }else{
+        result = true
       }
     }else{
       result =  selCat.length>0&&selCat[0].name === 'Other'
@@ -112,16 +116,15 @@ const RaiseIssue = ({show, handleClose}) =>{
   return(<>
     <Modal centered show={show} onHide={handleHide} className='signup-modal raise-issue-modal'>
         <Modal.Header closeButton className='aoi-modal-header'>
-            <h1 className='aoi-modal-title'>Raise an Issue</h1> 
+          <h1 className='aoi-modal-title'>Raise an Issue</h1> 
         </Modal.Header>
         <Modal.Body className='signup-modal-padding'>
-         <div className='signup-form-blk'>
+          <div className='signup-form-blk'>
               <Form>                
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                   <Form.Label>Title <span className='required'>*</span></Form.Label>
                   <Form.Control type="text" placeholder="Enter Post Title" name="title" value={issueObj.title} onChange={handleChange}/>
                 </Form.Group>
-
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                   <Form.Label>Description <span className='required'>*</span></Form.Label>
                   <Form.Control as="textarea" rows={3} name="description" value={issueObj.description} onChange={handleChange}/>
@@ -135,17 +138,24 @@ const RaiseIssue = ({show, handleClose}) =>{
                       onChange: handlePlace,
                       GooglePlacesDetailsQuery:{ fields: "geometry" },
                       placeholder:"Search",
-                    }}
-                     
+                    }}                     
                   />
                 </Form.Group>
+                <Form.Check
+                  inline
+                  label="Swathya Bharat"
+                  name="isSwathyaBharat"
+                  type='checkbox'
+                  checked={issueObj.isSwathyaBharat}
+                  onChange={()=>{setIsueObj({...issueObj, isSwathyaBharat:!issueObj.isSwathyaBharat,category:""})}}/>
                 <SelectBox 
                   label="Category" 
-                  isRequired={true} 
+                  isRequired={!issueObj.isSwathyaBharat} 
                   value={issueObj.category} 
                   data={getCategoryValues()}
                   name="category" 
                   onChange={handleChange}
+                  disabled={issueObj.isSwathyaBharat}
                   placeholder="-Select-"/>
                 {showOther()&&
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
@@ -171,11 +181,10 @@ const RaiseIssue = ({show, handleClose}) =>{
                         alt="Issue proofs"/>
                     </div>
                   ))}
-									
 								</Form.Group>}
                 <Button type="button" className='aoi-primary-btn full-btn' onClick={submitIssue} disabled={getValidate()}>Raise an Issue</Button>
               </Form>
-         </div>
+          </div>
 
         </Modal.Body>             
 

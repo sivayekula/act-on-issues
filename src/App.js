@@ -9,7 +9,7 @@ import './App.css';
 import { fetchCategories, setUserData } from './app/reducers/userSlice';
 import DetailsScreen from './components/DetailsScreen';
 import Home from './components/Home';
-import Profile from './components/Profile';
+import Profile from './components/Profile'; 
 
 export default function App() {
   const dispatch = useDispatch()
@@ -23,9 +23,15 @@ export default function App() {
     dispatch(fetchCategories())
     // eslint-disable-next-line react-hooks/exhaustive-deps
   },[authToken])
+
+  const handleIdle = () => {
+    // Handle actions when the user is idle (e.g., log out)
+    console.log('User is idle. Implement your logic here.');
+  };
   
   return (
      <BrowserRouter>
+     {/* <IdleTimeout onIdle={handleIdle} /> */}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/details/:issueId" element={<DetailsScreen />} />

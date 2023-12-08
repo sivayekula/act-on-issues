@@ -30,11 +30,13 @@ function DetailsScreen() {
 		navigate("/")
 	}
 
-    const handleSubmit= ()=> {
+    const handleSubmit= async()=> {
         try{
-            let res = saveComment({issueId: params.issueId, userId: authUser._id, comment})
+            let res = await saveComment({issueId: params.issueId, userId: authUser._id, comment})
             if(res.status === 200){
-                alertNotify(res.data.message, res.status)      
+                alertNotify(res.data.message, res.status)   
+                getUserComments()   
+                setComment("")
             }else{
                 throw new Error(res)        
             }
@@ -44,8 +46,16 @@ function DetailsScreen() {
     }
 
     const getUserComments= async ()=> {
-        let resp= await getComments(params.issueId)
-        setUserComments(resp.data.data)
+        try {
+            let resp= await getComments(params.issueId)
+            if(resp.status === 200){
+                setUserComments(resp.data.data)
+            }else{
+                throw new Error(resp)        
+            }
+        }catch(err){
+            console.log(err)
+        }
     }
 
     const handleCommentEvent =()=>{
@@ -181,6 +191,7 @@ function DetailsScreen() {
 
                         </div>
                         <div className='comments-list-blk'>
+                            {userComments.length>0?
                             <div className="comments-container">
                                 <h5 className='card-title'>Comments</h5>
                                 <ul id="comments-list" className="comments-list">
@@ -201,7 +212,10 @@ function DetailsScreen() {
                                     </li> ))}
                                    
                                 </ul>
-                            </div>
+                            </div>:
+                            <div className="comments-container">
+                                <h5 className='card-title'>No comments added</h5>
+                            </div>}
                         </div>
                     </div>
                 </div>
