@@ -1,6 +1,7 @@
 
 import jwt from 'jwt-decode';
 import React, { useState } from 'react';
+import firebase from 'firebase/app';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -11,6 +12,7 @@ import VALIDATION_MESSAGES from '../../MessageConstants';
 import { setUserData } from '../../app/reducers/userSlice';
 import { signupAPI, verifyOTPAPI } from '../APIServices/AppAPI';
 import OTPForm from './OtpForm';
+import {auth} from '../../firebase';
 
 const Signup = ({show, handleClose}) =>{
   const dispatch = useDispatch()
@@ -19,6 +21,8 @@ const Signup = ({show, handleClose}) =>{
   const [showOtp, setShowOtp] = useState(false)
 	const [otp, setOtp] = useState("")
   const [user, updateUser] = useState({})
+  const [verificationCode, setVerificationCode] = useState('');
+  const [confirmationResult, setConfirmationResult] = useState(null);
 
   const handleChange = (e)=>{
     const {value,name} = e.target
@@ -80,22 +84,36 @@ const Signup = ({show, handleClose}) =>{
     setShowOtp(false)
     setOtp("")
   }
-
+console.log(inputsData)
   const handleSignup= async()=> {
     try{
-      let res = await signupAPI({name:inputsData.username,loginId:inputsData.loginas,password:inputsData.password})
-      if(res.status === 200){
-        updateUser(res.data.data)
-        alertNotify(res.data.message, res.status)
+      if(validateEmail(inputsData.loginas)){
+        const confirmation = await auth.createUserWithEmailAndPassword(inputsData.loginas, inputsData.password);
+        setConfirmationResult(confirmation);
+        alertNotify("Code sent to your email", 200)
         setShowOtp(true)
       }else{
-        throw new Error(res)        
+        const confirmation = await auth.signInWithPhoneNumber(`+91${inputsData.loginas}`, new firebase.auth.RecaptchaVerifier('recaptcha-container',{size: "invisible",}));
+        setConfirmationResult(confirmation);
+        alertNotify("Code sent to your mobile number", 200)
+        setShowOtp(true)
+
       }
+      // let res = await signupAPI({name:inputsData.username,loginId:inputsData.loginas,password:inputsData.password})
+      // if(res.status === 200){
+      //   updateUser(res.data.data)
+              // }else{
+      //   throw new Error(res)        
+      // }
     }catch(error){
+      console.log(error)
       APIAlertNotify(error)
     }
     
   }
+
+  console.log(confirmationResult)
+  
 
   const verifyOtp = async() =>{
     try{
@@ -136,6 +154,7 @@ const Signup = ({show, handleClose}) =>{
                   <Form.Label>Password</Form.Label>
                   <Form.Control type="password" placeholder="Set your password" onChange={handleChange} value={inputsData.password} onBlur={(e)=>{verifyPassword(e.target.value)}} name="password"/>
                 </Form.Group>
+                <div id="recaptcha-container"/>
                 <Button type="button" className='aoi-primary-btn full-btn' disabled={disableButton()} onClick={handleSignup}>Signup</Button>
                 <div className='alt-login-blk pt-2'>
                   <span className='font-size14 pe-2'>Already have an account?</span><Button variant="link" className='txt-btn font-size14' onClick={()=>handleClose(AppConstants.LOGIN,true)}>Login</Button>
