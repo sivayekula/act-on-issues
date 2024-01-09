@@ -23,9 +23,9 @@ export const fecthTrendingNews = createAsyncThunk("issue/fetchTrendingNews",asyn
     }
 })
 
-export const fecthIssues = createAsyncThunk("issue/fecthIssues",async()=>{
+export const fecthIssues = createAsyncThunk("issue/fecthIssues",async(params)=>{
     try{
-        const res = await getIssues()
+        const res = await getIssues(params)
         if(res.status === 200){
             return res.data.data
         }else{
@@ -64,7 +64,6 @@ export const issueSlice = createSlice({
             state.trendingNews = payload
         });
         builder.addCase(fecthIssues.fulfilled,(state,{payload})=>{
-            console.log(payload,"payload")
             state.isLoading = false
             state.issues = payload?payload:[]
         });

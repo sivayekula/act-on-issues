@@ -152,6 +152,14 @@ const Header = ({signup= false, login= false}) => {
                         />
                         <span>Profile</span>
                       </Dropdown.Item>
+                      <Dropdown.Item className='d-flex align-items-center' onClick={()=>gotoURl("/myissues")}> 
+                        <img
+                          src="/ProfileLineIcon.svg"
+                          className="d-inline-block pe-2"
+                          alt="Aoi Proifle"
+                        />
+                        <span>My Issues</span>
+                      </Dropdown.Item>
                       <Dropdown.Item className='d-flex align-items-center' onClick={logOut}> 
                         <img
                           src="/LogoutIcon.svg"
@@ -190,7 +198,7 @@ const Header = ({signup= false, login= false}) => {
                     <Nav.Link href="#pricing">How it Works</Nav.Link>
                     <Nav.Link onClick={handleIssueRaiseEvent}>Raise an Issue</Nav.Link>
                     <Nav.Link href="#pricing">Address an Issue</Nav.Link>
-                    <Nav.Link href="#pricing">Issue by City</Nav.Link>
+                    <Nav.Link href="#pricing">My Community</Nav.Link>
                     <Nav.Link href="#pricing">Expert Advice</Nav.Link>
                     <Nav.Link href="#pricing">Support Us</Nav.Link>    
                   </Nav>

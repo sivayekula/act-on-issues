@@ -15,7 +15,7 @@ const OTPForm = ({otp, handleChange, verifyOtp, userObj, resendOtp}) =>{
 			<OtpInput
 				value={otp}
 				onChange={handleChange}
-				numInputs={4}
+				numInputs={6}
 				renderSeparator={<span>-</span>}
 				renderInput={(props) => <input {...props} />}
 			/>

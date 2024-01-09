@@ -10,6 +10,7 @@ import { fetchCategories, setUserData } from './app/reducers/userSlice';
 import DetailsScreen from './components/DetailsScreen';
 import Home from './components/Home';
 import Profile from './components/Profile'; 
+import MyIssues from './components/MyIssues';
 
 export default function App() {
   const dispatch = useDispatch()
@@ -31,11 +32,11 @@ export default function App() {
   
   return (
      <BrowserRouter>
-     {/* <IdleTimeout onIdle={handleIdle} /> */}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/details/:issueId" element={<DetailsScreen />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/myissues" element={<MyIssues />} />
       </Routes>
     </BrowserRouter>
   );

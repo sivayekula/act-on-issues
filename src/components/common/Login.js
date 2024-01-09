@@ -72,7 +72,7 @@ const Login = ({show, handleClose}) =>{
       let res = await loginAPI({loginId:inputsData.loginas,password:inputsData.password})
       if(res.status === 200){
         alertNotify(res.data.message, res.status)
-        localStorage.setItem("token",res.data.data)
+        await localStorage.setItem("token",res.data.data)
         const token = jwt(res.data.data)
         dispatch(setUserData(token))
         handleHide()
@@ -100,8 +100,8 @@ const Login = ({show, handleClose}) =>{
           <div className='signup-form-blk'>
             <Form>
               <Form.Group className="mb-3" controlId="email">
-                <Form.Label>Email or Phone</Form.Label>
-                <Form.Control type="text" placeholder="Enter email or phone number" onChange={handleChange} value={inputsData.loginas} name="loginas" onBlur={verifyInput} />
+                <Form.Label>Phone</Form.Label>
+                <Form.Control type="text" placeholder="Enter phone number" onChange={handleChange} value={inputsData.loginas} name="loginas" onBlur={verifyInput} />
               </Form.Group>
               <Form.Group className="mb-3" controlId="password">
                 <Form.Label>Password</Form.Label>

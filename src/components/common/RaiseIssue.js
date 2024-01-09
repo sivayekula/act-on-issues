@@ -6,16 +6,17 @@ import Modal from 'react-bootstrap/Modal';
 import AppConstants, { FILE_ACCEPTED_FORMATS } from '../../AppConstants';
 import { APIAlertNotify, alertNotify, convertBase64 } from '../../AppFunction';
 import { createIssue } from '../APIServices/AppAPI';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import SelectBox from './UI/SelectBox';
 import GooglePlacesAutocomplete,{getLatLng, geocodeByAddress} from 'react-google-places-autocomplete';
 import VALIDATION_MESSAGES from '../../MessageConstants';
+import { fecthIssues } from '../../app/reducers/issueSlice';
 
 const RaiseIssue = ({show, handleClose}) =>{
   const categories = useSelector((state) => state.userData.categories)
   const emptyObj = {title:"", description:"", category:"", address:"",images:[], other:'',isSwathyaBharat:false}
   const [issueObj, setIsueObj] = useState({...emptyObj})
-  
+  const dispatch = useDispatch()
   const handleHide = () =>{
     handleClose(AppConstants.RAISE_ISSUE,false)
     setIsueObj({...emptyObj})
@@ -54,6 +55,7 @@ const RaiseIssue = ({show, handleClose}) =>{
       let res = await createIssue(issueObj)
       if(res.status === 200){
         alertNotify(res.data.message, res.status)
+        dispatch(fecthIssues())
         handleHide()
       }else{
         throw new Error(res)

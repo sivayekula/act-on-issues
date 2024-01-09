@@ -281,20 +281,20 @@ background-color: var(--white-color);
   border-top: 1px solid var(--regular-border-color);
 }
 
-.news-img-slider-blk .carousel-item img {
+.news-img-slider-blk .-item img {
   border-radius: 6px;
   height: 210px;
   object-fit: cover;
 }
-.news-img-slider-blk .carousel-caption h5 {
+.news-img-slider-blk .-caption h5 {
     color: var(--white-color)!important;
     text-align: left!important;
     font-size: var(--news-title-font-size)!important;
 }
-.news-img-slider-blk .carousel-item, .news-img-slider-blk .carousel-inner {
+.news-img-slider-blk .-item, .news-img-slider-blk .-inner {
   border-radius: 6px;
 }
-.news-img-slider-blk .carousel-caption {
+.news-img-slider-blk .-caption {
   text-align: left!important;
   left: 0!important;
   right:0!important;
@@ -302,15 +302,15 @@ background-color: var(--white-color);
   padding: 1em!important;
   bottom:0!important;
 }
-.news-img-slider-blk .carousel {
+.news-img-slider-blk . {
   box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
   border-radius: 6px;
 }  
-.news-img-slider-blk .carousel-indicators {
+.news-img-slider-blk .-indicators {
     margin-bottom:0px!important;
 }
 
-.carousel-control-prev {
+.-control-prev {
   left: 6px!important;
   background: #000!important;
   border-radius: 6px!important;
@@ -321,7 +321,7 @@ background-color: var(--white-color);
   width: 20px!important;
 }
 
-.carousel-control-next {
+.-control-next {
   right: 6px!important;
   background: #000!important;
   border-radius: 6px!important;
@@ -1014,4 +1014,11 @@ background-color: var(--white-color);
   float: left;
   margin-right: 5px;
   margin-bottom: 10px;
+}
+
+.date-picker-btns{
+  margin-left: 18px;
+  padding: 3px;
+  font-size: 12px;
+  font-weight: bold;
 }

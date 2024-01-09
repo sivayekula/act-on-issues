@@ -23,8 +23,13 @@ export const getProfileDetails = async()=>{
 export const createIssue = async(payload)=>{
     return await backendAPI.post(URL.ISSUE_CREATION,payload)
 }
-export const getIssues = async()=>{
-    return await backendAPI.get(URL.GET_ISSUES)
+export const getIssues = async(params=null)=>{
+    let apiUrl = URL.GET_ISSUES
+    if(params){apiUrl = apiUrl+"?"+params}
+    return await backendAPI.get(apiUrl)
+}
+export const getMyIssues = async(userId)=>{
+    return await backendAPI.get(URL.GET_MY_ISSUES+"/"+userId)
 }
 export const getIssueDetails = async(issueId)=>{
     return await backendAPI.get(URL.GET_ISSUE+"/"+issueId)
@@ -35,6 +40,10 @@ export const getCategories = async()=>{
 
 export const getTrendingNews = async()=>{
     return await backendAPI.get(URL.GET_TRENDING_NEWS)
+}
+
+export const saveFlagStatus= async (payload)=> {
+    return await backendAPI.post(URL.FLAG, payload)
 }
 
 export const saveComment = async(payload)=>{

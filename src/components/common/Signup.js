@@ -16,12 +16,11 @@ import {auth} from '../../firebase';
 
 const Signup = ({show, handleClose}) =>{
   const dispatch = useDispatch()
-  const infoObj = {username:"", loginas:"",password:""}
+  const infoObj = {username:"", loginas:"",password:"",email:""}
   const [inputsData, updateInputsData]  = useState({...infoObj})
   const [showOtp, setShowOtp] = useState(false)
 	const [otp, setOtp] = useState("")
   const [user, updateUser] = useState({})
-  const [verificationCode, setVerificationCode] = useState('');
   const [confirmationResult, setConfirmationResult] = useState(null);
 
   const handleChange = (e)=>{
@@ -43,6 +42,7 @@ const Signup = ({show, handleClose}) =>{
         alertNotify(VALIDATION_MESSAGES.MAX_LENGTH_REACHED)      
       }
     }
+    
     if(name === 'password'){
       if(value.length > AppConstants.PHONE_LENGTH){
         isValid = false   
@@ -70,9 +70,10 @@ const Signup = ({show, handleClose}) =>{
   }
 
   const disableButton = ()=>{
-    let loginasValid = validateEmail(inputsData.loginas)||validatePhone(inputsData.loginas)
+    let loginasValid = validateEmail(inputsData.email)&&validatePhone(inputsData.loginas)&&inputsData.username.length>3
     const passwordValid = verifyPassword(inputsData.password, true)
-    return !(textValidator(inputsData.username) && loginasValid && passwordValid)
+    const btnDisable = loginasValid && passwordValid
+    return !(btnDisable)
   }
   const handleHide = () =>{
     handleClose(AppConstants.SIGNUP,false)
@@ -83,41 +84,42 @@ const Signup = ({show, handleClose}) =>{
     updateInputsData({...infoObj})
     setShowOtp(false)
     setOtp("")
-  }
-console.log(inputsData)
+  } 
   const handleSignup= async()=> {
     try{
-      if(validateEmail(inputsData.loginas)){
-        const confirmation = await auth.createUserWithEmailAndPassword(inputsData.loginas, inputsData.password);
-        setConfirmationResult(confirmation);
-        alertNotify("Code sent to your email", 200)
-        setShowOtp(true)
-      }else{
-        const confirmation = await auth.signInWithPhoneNumber(`+91${inputsData.loginas}`, new firebase.auth.RecaptchaVerifier('recaptcha-container',{size: "invisible",}));
-        setConfirmationResult(confirmation);
-        alertNotify("Code sent to your mobile number", 200)
-        setShowOtp(true)
-
-      }
-      // let res = await signupAPI({name:inputsData.username,loginId:inputsData.loginas,password:inputsData.password})
-      // if(res.status === 200){
-      //   updateUser(res.data.data)
-              // }else{
-      //   throw new Error(res)        
-      // }
+      await firebase.auth().createUserWithEmailAndPassword(inputsData.loginas, inputsData.password);
+      const user = firebase.auth().currentUser;
+      await user.sendEmailVerification();
+      alertNotify("Link sent to your email, please verify your email", 200)
+      handleClose(AppConstants.LOGIN,true)
     }catch(error){
-      console.log(error)
       APIAlertNotify(error)
     }
-    
   }
 
-  console.log(confirmationResult)
+  const handlePhoneSignup= async()=> {
+    try{
+      let res = await signupAPI({name:inputsData.username,loginId:inputsData.loginas,password:inputsData.password,email:inputsData.email})
+      if(res.status === 200){
+        const confirmation = await auth.signInWithPhoneNumber(`+91${inputsData.loginas}`, new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+          size: 'invisible'}));
+        setConfirmationResult(confirmation);
+        updateUser(res.data.data)
+        alertNotify("Code sent to your mobile number", 200)
+        setShowOtp(true)
+      } else {
+        throw new Error(res)
+      }
+    }catch(error){
+      APIAlertNotify(error)
+    }
+  }
   
 
   const verifyOtp = async() =>{
     try{
-      let res = await verifyOTPAPI({userId:user.userId,token:otp})
+      await confirmationResult.confirm(otp);
+      let res= await verifyOTPAPI({userId:user.userId, is_verified: true})
       if(res.status === 200){
         alertNotify(res.data.message, res.status)
         localStorage.setItem("token",res.data.data)
@@ -127,6 +129,7 @@ console.log(inputsData)
         throw new Error(res)        
       }
     }catch(error){
+      console.log(error)
       APIAlertNotify(error)
     }
   }
@@ -142,23 +145,29 @@ console.log(inputsData)
             <h1 className='signup-modal-title'>Signup</h1>
             <div className='signup-form-blk'>
               <Form>
-                <Form.Group className="mb-3" controlId="username">
-                  <Form.Label>Name </Form.Label>
-                  <Form.Control type="text" placeholder="Enter user name" onChange={handleChange} value={inputsData.username} name="username"/>
-                </Form.Group>  
-                <Form.Group className="mb-3" controlId="loginas">
-                  <Form.Label>Email or Phone</Form.Label>
-                  <Form.Control type="text" placeholder="Enter email or phone number" onChange={handleChange} value={inputsData.loginas} onBlur={verifyEmail} name="loginas"/>
-                </Form.Group>
-                <Form.Group className="mb-3" controlId="password">
-                  <Form.Label>Password</Form.Label>
-                  <Form.Control type="password" placeholder="Set your password" onChange={handleChange} value={inputsData.password} onBlur={(e)=>{verifyPassword(e.target.value)}} name="password"/>
-                </Form.Group>
-                <div id="recaptcha-container"/>
-                <Button type="button" className='aoi-primary-btn full-btn' disabled={disableButton()} onClick={handleSignup}>Signup</Button>
+                  <Form.Group className="mb-3" controlId="username">
+                    <Form.Label>Name <span className='required'>*</span></Form.Label>
+                    <Form.Control type="text" placeholder="Enter name" onChange={handleChange} value={inputsData.username} name="username"/>
+                  </Form.Group>
+                  <Form.Group className="mb-3" controlId="email">
+                    <Form.Label>Email <span className='required'>*</span></Form.Label>
+                    <Form.Control type="text" placeholder="Enter email" onChange={handleChange} value={inputsData.email} onBlur={verifyEmail} name="email"/>
+                  </Form.Group>
+                  <Form.Group className="mb-3" controlId="loginas">
+                    <Form.Label>Mobile No <span className='required'>*</span></Form.Label>
+                    <Form.Control type="text" placeholder="Enter mobile number" onChange={handleChange} value={inputsData.loginas} onBlur={verifyEmail} name="loginas"/>
+                  </Form.Group>
+                  <Form.Group className="mb-3" controlId="password">
+                    <Form.Label>Password <span className='required'>*</span></Form.Label>
+                    <Form.Control type="password" placeholder="Set your password" onChange={handleChange} value={inputsData.password} onBlur={(e)=>{verifyPassword(e.target.value)}} name="password"/>
+                  </Form.Group>
+                  <div id="recaptcha-container"/>
+                  <Button type="button" className='aoi-primary-btn full-btn' disabled={disableButton()} onClick={handlePhoneSignup}>Signup</Button>
+               
                 <div className='alt-login-blk pt-2'>
                   <span className='font-size14 pe-2'>Already have an account?</span><Button variant="link" className='txt-btn font-size14' onClick={()=>handleClose(AppConstants.LOGIN,true)}>Login</Button>
                 </div> 
+                
                 <div className='terms-and-conditions-blk font-size14 pt-2'>
                   <span>By continuing, you are setting up a Act on issue account and agree to our <a href='#' className=''>User Agreement</a> and <a href='#' className=''>Privacy Policy</a>.</span>
                 </div> 

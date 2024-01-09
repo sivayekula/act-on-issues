@@ -2,13 +2,14 @@
 import React, { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Nav from 'react-bootstrap/Nav';
+import Carousel from 'react-bootstrap/Carousel';
 import Lightbox from "yet-another-react-lightbox";
 import Header from './Header';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fecthIssueDetails } from '../app/reducers/issueSlice';
 import { Form } from 'react-bootstrap';
-import { getComments, saveComment } from './APIServices/AppAPI';
+import { getComments, saveComment, saveFlagStatus } from './APIServices/AppAPI';
 import { APIAlertNotify, alertNotify, getTime } from '../AppFunction';
 // import './App.css';
 
@@ -37,6 +38,19 @@ function DetailsScreen() {
                 alertNotify(res.data.message, res.status)   
                 getUserComments()   
                 setComment("")
+            }else{
+                throw new Error(res)        
+            }
+        }catch(err){
+            APIAlertNotify(err)
+        }
+    }
+
+    const setFlagStatus= async (status)=> {
+        try{
+            let res = await saveFlagStatus({issueId: params.issueId, userId: authUser.userId, status})
+            if(res.status === 200){
+                alertNotify(res.data.message, res.status)
             }else{
                 throw new Error(res)        
             }
@@ -91,7 +105,7 @@ function DetailsScreen() {
                                 className="issue-type-icon"
                                 alt="news title image"
                             />
-                            <span className='issue-type-info-txt'><span>{ getTime(issue.created_at)}</span></span>
+                            <span className='issue-type-info-txt'><span>{issue.userId.name}</span></span>
                         </div>
                         <div className='issue-icon-item d-flex align-items-center aoi-gap-off'>
                             <img
@@ -114,16 +128,33 @@ function DetailsScreen() {
                         {issue.description}
                     </div>
                     <div className='issue-all-images-blk'>
-                        <div className='issue-dtls-img-blk'>
-                            <img onClick={() => setOpen(true)}
+                        {/* <div className='issue-dtls-img-blk'> */}
+                            {/* <img onClick={() => setOpen(true)}
                                     src={`${process.env.REACT_APP_PROFILE_URL}/issues/${issue.images[0]}`}
                                     className="issue-card-img issue-dtls-img"
                                     alt="news title image"
                             />
-                            <span className='imgs-count'>{issue.images.length}</span>
-                        </div>
+                            <span className='imgs-count'>{issue.images.length}</span> */}
+                            {/* <div className='right-news-slider-main-blk d-flex flex-column aoi-gap-1'> */}
+                     <div className='news-img-slider-blk'>
+                      <Carousel>
+                        {issue.images.map(item=> (
+                          <Carousel.Item>
+                            <img
+                              className="d-block w-100"
+                              src={`${process.env.REACT_APP_PROFILE_URL}/issues/${item}`}
+                              alt="First slide"
+                            />
+                            <Carousel.Caption>
+                              {/* <h5>Swatch Bharat Issue1</h5> */}
+                            </Carousel.Caption>
+                          </Carousel.Item>
+                          ))}
+                        </Carousel>
+                     </div>
+                        {/* </div> */}
 
-                        <Lightbox
+                        {/* <Lightbox
                             open={open}
                             close={() => setOpen(false)}
                             slides={
@@ -133,7 +164,7 @@ function DetailsScreen() {
                                     
                                 }))
                             }
-                        />
+                        /> */}
                     </div>
                     <div className='details-comments-blk'>
                         <div className='pt-3 d-flex align-items-center justify-content-between'>
@@ -146,13 +177,21 @@ function DetailsScreen() {
                                     />
                                     <span className='issue-type-info-txt'><span>Comments</span><span>({userComments.length})</span></span>
                                 </div>
-                                <div className='issue-icon-item d-flex align-items-center aoi-gap-off'>
+                                <div className='issue-icon-item d-flex align-items-center aoi-gap-off' onClick={()=>setFlagStatus(true)}>
                                     <img
                                         src="/FlagCardIcon.svg"
                                         className="card-flag-icon"
                                         alt="news title image"
                                     />
-                                    <span className='issue-type-info-txt'><span>Flag</span><span>(22)</span></span>
+                                    <span className='issue-type-info-txt'><span>ISupport</span><span>(22)</span></span>
+                                </div>
+                                <div className='issue-icon-item d-flex align-items-center aoi-gap-off' onClick={()=>setFlagStatus(false)}>
+                                    <img
+                                        src="/FlagCardIcon.svg"
+                                        className="card-flag-icon"
+                                        alt="news title image"
+                                    />
+                                    <span className='issue-type-info-txt'><span>UnSupport</span><span>(22)</span></span>
                                 </div>
                                 <div className='issue-icon-item d-flex align-items-center aoi-gap-off'>
                                     <img
@@ -196,11 +235,9 @@ function DetailsScreen() {
                                 <h5 className='card-title'>Comments</h5>
                                 <ul id="comments-list" className="comments-list">
                                 {userComments.map(coment=>(
-                                    <li>
+                                    <li key={coment._id}>
                                         <div className="comment-main-level">
-                                        
                                             <div className="comment-avatar"><img src="/avatar2.jpg" alt=""/></div>
-                                            
                                             <div className="comment-box">
                                                 <div className="comment-head">
                                                     <h6 className="comment-name by-author">{coment.userId.name}</h6>
