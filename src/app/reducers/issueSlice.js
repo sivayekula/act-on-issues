@@ -6,6 +6,7 @@ import {getIssueDetails, getIssues, getTrendingNews } from "../../components/API
 const initialState = {
     trendingNews:[],
     issues:[],
+    hotIssues: [],
     issueDetails:null
 }
  
@@ -27,7 +28,7 @@ export const fecthIssues = createAsyncThunk("issue/fecthIssues",async(params)=>{
     try{
         const res = await getIssues(params)
         if(res.status === 200){
-            return res.data.data
+            return res.data
         }else{
             throw new Error(res)
         }
@@ -64,8 +65,10 @@ export const issueSlice = createSlice({
             state.trendingNews = payload
         });
         builder.addCase(fecthIssues.fulfilled,(state,{payload})=>{
+            console.log(payload)
             state.isLoading = false
-            state.issues = payload?payload:[]
+            state.issues = payload.data?payload.data:[]
+            state.hotIssues = payload.hotIssues?payload.hotIssues:[]
         });
         builder.addCase(fecthIssueDetails.fulfilled,(state,{payload})=>{
             state.isLoading = false

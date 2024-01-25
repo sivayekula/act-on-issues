@@ -9,7 +9,7 @@ import Header from './Header';
 
 function MyIssues() {
 	const navigate = useNavigate()
-    const profileData = useSelector(state => state.userData.profileData)
+    const authUser = useSelector((state)=>state.userData.user)
     const [issues, setIssues] = useState([])
 
 	const gotoURl = () => {
@@ -22,7 +22,7 @@ function MyIssues() {
 
     const getIssues= async ()=> {
         try{
-            let res= await getMyIssues(profileData._id)
+            let res= await getMyIssues(authUser.userId)
             if(res.status === 200){
                 setIssues(res.data.data)
             } else {
@@ -95,7 +95,7 @@ function MyIssues() {
                                   />
                               </div>
                             </div>
-                            <div className='issue-card-acions-blk d-flex align-items-center justify-content-between'>
+                            {/* <div className='issue-card-acions-blk d-flex align-items-center justify-content-between'>
                                 <div className='left-card-actions d-flex aoi-gap-1'>
                                     <div className='issue-icon-item d-flex align-items-center aoi-gap-off'>
                                         <img
@@ -133,7 +133,7 @@ function MyIssues() {
                                 <div className='right-card-actions'>
                                 <Button variant="link" className='txt-btn'>Acknowledge</Button>
                                 </div>
-                            </div>
+                            </div> */}
                       </div> 
                       )
                     })}

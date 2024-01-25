@@ -46,6 +46,10 @@ export const saveFlagStatus= async (payload)=> {
     return await backendAPI.post(URL.FLAG, payload)
 }
 
+export const getViewCount= async (payload)=> {
+    return await backendAPI.post(URL.VIEWS, payload)
+}
+
 export const saveComment = async(payload)=>{
     return await backendAPI.post(URL.SAVE_COMMENT, payload)
 }

@@ -16,6 +16,7 @@ import { getTime } from '../AppFunction';
 import { fecthIssues, fecthTrendingNews } from '../app/reducers/issueSlice';
 import Header from './Header';
 import moment from 'moment-timezone';
+import ShareModal from './common/shareModal';
 
 
 
@@ -23,7 +24,7 @@ function Home() {
   const dispatch = useDispatch()
   const authUser = useSelector((state)=>state.userData.user)
   const trendingNews = useSelector(state=>state.issueData.trendingNews)
-  const data = useSelector(state=>state.issueData.issues)
+  const {issues: data, hotIssues} = useSelector(state=>state.issueData)
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndtDate] = useState("");
   const [status, setStatus] = useState("Open");
@@ -34,6 +35,7 @@ function Home() {
   const [issues, setIssues] = useState(data)
   const [searchKey, setSearchKey] = useState("")
   const [login, setLogin]= useState(false);
+  const [showShareModal, setShowShareModal] = useState(false)     
   const navigate = useNavigate()
 
   const handlePlace = (value)=>{
@@ -153,6 +155,34 @@ function Home() {
                 </div>
                 <div className='center-issues-cards-main-blk'>
                   {/* Header Search block */} 
+                    {/* Hot Issues slider block */}
+                    <div className='news-img-slider-blk mb-3'>
+                        <Carousel>
+                            <Carousel.Item>
+                                <img
+                                    className="d-block w-100"
+                                      src="./water-issue.jpg"
+                                    alt="First slide"
+                                />
+                                <Carousel.Caption>
+                                    <h5>hot Issue1</h5>
+                                </Carousel.Caption>
+                            </Carousel.Item>
+                            <Carousel.Item>
+                                <img
+                                    className="d-block w-100"
+                                      src="./water-issue.jpg"
+                                    alt="Second slide"
+                                />
+                                <Carousel.Caption>
+                                    <h5>hot Issue2</h5>
+                                </Carousel.Caption>
+                            </Carousel.Item>
+                        </Carousel>
+                      </div>
+
+                  {/* Header Search block */}
+
                   <div className='issues-header-blk d-flex align-items-center justify-content-between'>
                     <h5 className='card-title'>Recently Posted Issues</h5>
                     <div className='issue-search-blk'>
@@ -173,65 +203,105 @@ function Home() {
                     </div>
 
                     <div className="hide-on-web show-on-mobile">
-                      <Dropdown align="start" autoClose="outside">
-                        <Dropdown.Toggle id="dropdown-basic" className='icon-dropdown notificaation-dropdown filter-dropdown-mobile'>
-                          <img
-                            src="./FilterIcon.svg"
-                            className="d-inline-block align-top"
-                            alt="Notifications"/>
-                        </Dropdown.Toggle>
+                              <Dropdown align="start" autoClose="outside">
+                                <Dropdown.Toggle id="dropdown-basic" className='icon-dropdown notificaation-dropdown filter-dropdown-mobile'>
+                                    <img
+                                        src="./FilterIcon.svg"
+                                        className="d-inline-block align-top"
+                                        alt="Notifications"
+                                    />
+                                </Dropdown.Toggle>
 
-                        <Dropdown.Menu className='mobile-filter-dropdown-blk'>
-                          <Dropdown.Item className="mobile-filter-drop-item">
-                            <label className='font-weight-500'>Status</label>
-                            <Dropdown className="mobile-filter-dropdown" onSelect={(eventKey)=>setStatus(eventKey)}>
-                              <Dropdown.Toggle id="dropdown-autoclose-outside" >
-                                {status}
-                              </Dropdown.Toggle>
+                                <Dropdown.Menu className='mobile-filter-dropdown-blk'>
+                                    <Dropdown.Item className="mobile-filter-drop-item">
+                                          <label className='font-weight-500'>Status</label>
+                                          <Dropdown className="mobile-filter-dropdown">
+                                              <Dropdown.Toggle id="dropdown-autoclose-outside">
+                                                  All
+                                              </Dropdown.Toggle>
 
-                              <Dropdown.Menu>
-                                <Dropdown.Item eventKey="All">All</Dropdown.Item>
-                                <Dropdown.Item eventKey="Open">Open</Dropdown.Item>
-                                <Dropdown.Item eventKey="Resolved">Resolved</Dropdown.Item>
-                              </Dropdown.Menu>
-                            </Dropdown>
-                          </Dropdown.Item>
-                          <Dropdown.Item className="mobile-filter-drop-item">
-                            <label className='font-weight-500'>Location</label>
-                            <Dropdown className="mobile-filter-dropdown">
-                              <Dropdown.Toggle id="dropdown-autoclose-outside">
-                                {locFilter?locFilter.label:"All"}
-                              </Dropdown.Toggle>
-                              <Dropdown.Menu>
-                                <Dropdown.Item className="mobile-filter-drop-item">
-                                <GooglePlacesAutocomplete
-                                  apiKey={process.env.REACT_APP_GOOGLE_API_KEY}
-                                  selectProps={{
-                                    value:locFilter,
-                                    onChange: handlePlace,
-                                    GooglePlacesDetailsQuery:{ fields: "geometry" },
-                                    placeholder:"Search",
-                                  }}                     
-                                /> 
-                                </Dropdown.Item>
-                              </Dropdown.Menu>
-                            </Dropdown>
-                          </Dropdown.Item>
-                          <Dropdown.Item className="mobile-filter-drop-item datepicker-input-blk">
-                            <label className='font-weight-500'>Start Date</label>
-                            <DatePicker showIcon selected={startDate} onChange={(date) => setStartDate(date)} />
-                          </Dropdown.Item>
-                          <Dropdown.Item className="mobile-filter-drop-item datepicker-input-blk">
-                            <label className='font-weight-500'>End Date</label>
-                            <DatePicker showIcon selected={endDate} onChange={(date) => setEndtDate(date)} />
-                          </Dropdown.Item>
-                          <div className="mob-filters-btns-blk">
-                            <Button type="submit" className='aoi-primary-btn full-btn' onClick={handleDateFilters} disabled={startDate==""||endDate==''}>Apply</Button>
-                            <Button type="submit" className='aoi-secondary-btn full-btn' onClick={()=>handleClearBtn(true)}>Clear</Button>
-                          </div>  
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </div>
+                                              <Dropdown.Menu>
+                                                  <Dropdown.Item>All</Dropdown.Item>
+                                                  <Dropdown.Item>Open</Dropdown.Item>
+                                                  <Dropdown.Item>Closed</Dropdown.Item>
+                                                  <Dropdown.Item>Myposts</Dropdown.Item>
+                                              </Dropdown.Menu>
+                                          </Dropdown>
+                                      </Dropdown.Item>
+                                      <Dropdown.Item className="mobile-filter-drop-item">
+                                          <label className='font-weight-500'>Location</label>
+                                          <Dropdown className="mobile-filter-dropdown" autoClose="outside">
+                                              <Dropdown.Toggle id="dropdown-autoclose-outside">
+                                                  All
+                                              </Dropdown.Toggle>
+
+                                              <Dropdown.Menu>
+                                                  <Dropdown.Item className="mobile-filter-drop-item">
+                                                      <InputGroup className="">
+
+                                                          <Form.Control
+                                                              placeholder="Search…"
+                                                              aria-label="Search…"
+                                                              aria-describedby="basic-addon1"
+                                                          />
+                                                          <InputGroup.Text id="basic-addon1"><img
+                                                              src="./LocationPinIcon.svg"
+                                                              className="issue-search-icon"
+                                                              alt="Aoi search"
+                                                          /></InputGroup.Text>
+                                                      </InputGroup>
+                                                  </Dropdown.Item>
+
+                                              </Dropdown.Menu>
+                                          </Dropdown>
+                                      </Dropdown.Item>
+                                      <Dropdown.Item className="mobile-filter-drop-item">
+                                          <label className='font-weight-500'>Area</label>
+                                          <Dropdown className="mobile-filter-dropdown" autoClose="outside">
+                                              <Dropdown.Toggle id="dropdown-autoclose-outside">
+                                                  All
+                                              </Dropdown.Toggle>
+
+                                              <Dropdown.Menu>
+                                                  <Dropdown.Item className="mobile-filter-drop-item">
+                                                      <InputGroup className="">
+
+                                                          <Form.Control
+                                                              placeholder="Search…"
+                                                              aria-label="Search…"
+                                                              aria-describedby="basic-addon1"
+                                                          />
+                                                          <InputGroup.Text id="basic-addon1"><img
+                                                              src="./LocationPinIcon.svg"
+                                                              className="issue-search-icon"
+                                                              alt="Aoi search"
+                                                          /></InputGroup.Text>
+                                                      </InputGroup>
+                                                  </Dropdown.Item>
+
+                                              </Dropdown.Menu>
+                                          </Dropdown>
+                                      </Dropdown.Item>
+                                      <Dropdown.Item className="mobile-filter-drop-item datepicker-input-blk">
+                                          <label className='font-weight-500'>Start Date</label>
+                                          <DatePicker showIcon selected={startDate} onChange={(date) => setStartDate(date)} />
+                                      </Dropdown.Item>
+                                      <Dropdown.Item className="mobile-filter-drop-item datepicker-input-blk">
+                                          <label className='font-weight-500'>End Date</label>
+                                          <DatePicker showIcon selected={startDate} onChange={(date) => setStartDate(date)} />
+                                      </Dropdown.Item>
+
+                                      <div className="mob-filters-btns-blk">
+                                          <Button type="submit" className='aoi-primary-btn full-btn'>Apply</Button>
+                                          <Button type="submit" className='aoi-secondary-btn full-btn'>Clear</Button>
+                                      </div>  
+                                      
+                                    
+
+                                </Dropdown.Menu>
+                                </Dropdown>
+                        </div>
+
                   </div>
                   
                    {/* Filters block */} 
@@ -289,10 +359,11 @@ function Home() {
 
                   {/* Issues card */} 
                   <div className='issues-cards-list-blk d-flex flex-column aoi-gap-1'>
+                  
                     {issues.map(issue=>{
                       return(
-                        <div className='news-card issue-info-card' key={issue._id} onClick={()=>{gotoDetails(issue._id)}}>
-                            <div className='d-flex aoi-gap-1 p-3'>
+                        <div className='news-card issue-info-card' key={issue._id}>
+                            <div className='d-flex aoi-gap-1 p-3' onClick={()=>{gotoDetails(issue._id)}}>
                               <div className='left-issue-card-info-blk'>
                                 <h3 className='news-title'>{issue.title}</h3>
                                 <div className='issue-type-icons-blk d-flex align-items-center'>
@@ -303,10 +374,7 @@ function Home() {
                                             alt="news title image"
                                         />
                                         <span className='issue-type-info-txt'>
-                                          <span>
-                                          { 
-                                            issue.userId.name
-                                          }
+                                          <span>{`by ${issue.userId.name} - ${getTime(issue.created_at)}`}
                                           </span>
                                         </span>
                                     </div>
@@ -324,7 +392,7 @@ function Home() {
                                             className="issue-type-icon"
                                             alt="news title image"
                                         />
-                                        <span className='issue-type-info-txt'>{issue.address.label}</span>
+                                        <span className='issue-type-info-txt'>{issue.address.label.split(",")[0]}</span>
                                     </div>
                                 </div>
                                 <div className='issue-card-description-blk'>
@@ -338,11 +406,17 @@ function Home() {
                                     className="issue-card-img"
                                     alt="news title image"
                                   />
+                                    <span className='imgs-count samll-size'>4</span>
+                                      <img 
+                                          src="./GreenTick.svg"
+                                          className="resolved-tick-icon"
+                                          alt="resolved"
+                                      />
                               </div>
                             </div>
                             <div className='issue-card-acions-blk d-flex align-items-center justify-content-between'>
-                                <div className='left-card-actions d-flex aoi-gap-1'>
-                                    <div className='issue-icon-item d-flex align-items-center aoi-gap-off'>
+                                <div className='left-card-actions d-flex aoi-gap-1' >
+                                    <div className='issue-icon-item d-flex align-items-center aoi-gap-off' onClick={()=>{gotoDetails(issue._id)}}>
                                         <img
                                             src="./CommentsCardIcon.svg"
                                             className="issue-type-icon"
@@ -350,7 +424,7 @@ function Home() {
                                         />
                                         <span className='issue-type-info-txt'><span>Comments</span><span>({issue.commentsCount})</span></span>
                                     </div>
-                                    <div className='issue-icon-item d-flex align-items-center aoi-gap-off'>
+                                    <div className='issue-icon-item d-flex align-items-center aoi-gap-off' onClick={()=>{gotoDetails(issue._id)}}>
                                         <img
                                             src="./FlagCardIcon.svg"
                                             className="card-flag-icon"
@@ -358,25 +432,26 @@ function Home() {
                                         />
                                         <span className='issue-type-info-txt'><span>ISupport</span><span>({issue.flagsCount})</span></span>
                                     </div>
-                                    <div className='issue-icon-item d-flex align-items-center aoi-gap-off'>
-                                        <img
-                                            src="./ShareCardIcon.svg"
-                                            className="issue-type-icon"
-                                            alt="news title image"
-                                        />
-                                        <span className='issue-type-info-txt'><span>Share</span><span>(22)</span></span>
-                                    </div>
-                                    <div className='issue-icon-item d-flex align-items-center aoi-gap-off'>
+                                    <div className='issue-icon-item d-flex align-items-center aoi-gap-off' onClick={()=>{gotoDetails(issue._id)}}>
                                         <img
                                             src="./ViewsCardIcon.svg"
                                             className="issue-type-icon"
                                             alt="news title image"
                                         />
-                                        <span className='issue-type-info-txt'><span>Views</span><span>(22)</span></span>
+                                        <span className='issue-type-info-txt'><span>Views</span><span>({issue.viewsCount})</span></span>
+                                    </div>
+                                    <div className='issue-icon-item d-flex align-items-center aoi-gap-off' onClick={()=>{setShowShareModal(true)}}>
+                                        <img
+                                            src="./ShareCardIcon.svg"
+                                            className="issue-type-icon"
+                                            alt="news title image"
+                                        />
+                                        <span className='issue-type-info-txt'><span>Share</span></span>
                                     </div>
                                 </div>
                                 <div className='right-card-actions'>
                                 <Button variant="link" className='txt-btn'>Acknowledge</Button>
+                                {showShareModal&&<ShareModal show={showShareModal} handleHide={()=>{setShowShareModal(false)}}/>}
                                 </div>
                             </div>
                       </div> 
