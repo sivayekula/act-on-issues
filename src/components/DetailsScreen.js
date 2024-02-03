@@ -8,11 +8,11 @@ import Header from './Header';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fecthIssueDetails } from '../app/reducers/issueSlice';
-import { Form } from 'react-bootstrap';
 import { getComments, saveComment, saveFlagStatus, getViewCount } from './APIServices/AppAPI';
 import { APIAlertNotify, alertNotify, getTime } from '../AppFunction';
 import ShareModal from './common/shareModal';
 import ChatChannel from './ChatChannel';
+import { SUPPORT, UNSUPPORT } from '../AppConstants';
 // import './App.css';
 
 
@@ -27,22 +27,22 @@ function DetailsScreen() {
     const [showShareModal, setShowShareModal] = useState(false)
 
     const [userComments, setUserComments]= useState([])
-    const [supportCount, setSupportCount] = useState(issue?.supportCount)
-    const [unsupportCount, setUnsupportCount] = useState(issue?.unsupportCount)
+    const [supportCount, setSupportCount] = useState(0)
+    const [unsupportCount, setUnsupportCount] = useState(0)
+    const [flagStatus, setFlagStatus] = useState(null)
 
 	const goToHome = ()=>{
 		navigate("/")
 	}
 
-
-
-    const setFlagStatus= async (status)=> {
+    const handleFlagStatus= async (status)=> {
         try{
             let res = await saveFlagStatus({issueId: params.issueId, userId: authUser.userId, status})
             if(res.status === 200){
                 alertNotify(res.data.message, res.status)
                 setSupportCount(res.data.supportCount)
                 setUnsupportCount(res.data.unsupportCount)
+                setFlagStatus(status?SUPPORT:UNSUPPORT)
             }else{
                 throw new Error(res)
             }
@@ -106,6 +106,21 @@ function DetailsScreen() {
         saveViewCount()
     },[])
 
+    useEffect(()=>{
+        setSupportCount(issue?.flags.length)
+        setUnsupportCount(issue?.unflags.length)
+        issue?.flags.forEach(obj=>{
+            if(obj.userId._id == authUser.userId){
+                setFlagStatus(SUPPORT)
+            }
+        })
+        issue?.unflags.forEach(obj=>{
+            if(obj.userId._id == authUser.userId){
+                setFlagStatus(UNSUPPORT)
+            }
+        })
+    },[issue])
+
     return (
         <div className='main-page'>
            <Header login={login} />
@@ -124,6 +139,7 @@ function DetailsScreen() {
                 </div>
                 <div className='issue-details-content-blk'>
                     <h1 className='details-title'>{issue.title}</h1>
+                    {issue.status == "resolved" && <span class="issue-status-label resolved">Resolved</span>}
                     <div className='issue-type-icons-blk d-flex align-items-center'>
                         <div className='issue-icon-item d-flex align-items-center aoi-gap-off'>
                             <img
@@ -184,17 +200,17 @@ function DetailsScreen() {
                                     />
                                     <span className='issue-type-info-txt'><span>Comments</span><span>({userComments.length})</span></span>
                                 </div>
-                                <div className='issue-icon-item d-flex align-items-center aoi-gap-off' onClick={()=>setFlagStatus(true)}>
+                                <div className='issue-icon-item d-flex align-items-center aoi-gap-off' onClick={()=>handleFlagStatus(true)}>
                                     <img
-                                        src="/FlagCardIcon.svg"
+                                        src={flagStatus=="support"?"/isupportFillIcon.svg":"/isupportIcon.svg"}
                                         className="card-flag-icon"
                                         alt="news title image"
                                     />
                                     <span className='issue-type-info-txt'><span>ISupport</span><span>({supportCount})</span></span>
                                 </div>
-                                <div className='issue-icon-item d-flex align-items-center aoi-gap-off' onClick={()=>setFlagStatus(false)}>
+                                <div className='issue-icon-item d-flex align-items-center aoi-gap-off' onClick={()=>handleFlagStatus(false)}>
                                     <img
-                                        src="/FlagCardIcon.svg"
+                                        src={flagStatus=="unsupport"?"/unsupportFillIcon.svg":"/unsupportIcon.svg"}
                                         className="card-flag-icon"
                                         alt="news title image"
                                     />

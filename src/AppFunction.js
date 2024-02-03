@@ -117,5 +117,14 @@ export const getTime = (postTimestamp) =>{
     }
     return timeSincePosted
 }
-
+export const isUserLikedTheIsuue = (issue, authUser)=>{
+    let iFlag = "/isupportIcon.svg"
+    if(authUser){
+      const userIndex = issue.flags.findIndex(obj=>obj.userId._id == authUser.userId)
+      if(userIndex != -1){
+        iFlag = "/isupportFillIcon.svg"
+      }
+    }
+    return iFlag
+  }
 export default textValidator;

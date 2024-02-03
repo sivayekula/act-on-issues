@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
  
 
 const MessageList = ({ messages, onReplyClick }) => {
-	const defaultURl = "./ProfilePicGrey.svg"
+	const defaultURl = "/ProfilePicGrey.svg"
   return (
     <div className="comments-container">
         <h5 className='card-title'>Comments</h5>
@@ -28,13 +28,22 @@ const MessageList = ({ messages, onReplyClick }) => {
                 <span>  
                     {getTime(message.created_at)}
                 </span>
-						<span style={{float: "right", cursor: "pointer", paddingLeft: "60px"}} onClick={()=>onReplyClick(message)}><span style={{fontSize: "10px"}}>Reply</span></span>
+						{/* <span style={{float: "right", cursor: "pointer", paddingLeft: "60px"}} ><span style={{fontSize: "10px"}}>Reply</span></span> */}
 
             </div>
             {message.commentId &&
 						<div style={{color: 'white', backgroundColor: "gray"}} className="comment-content">{message.commentId.comment}</div>}
 						<div className="comment-content">{message.comment}</div>
-            
+            <div className='issue-icon-item d-flex align-items-center mt-2'>
+                                                    <Button className="reply-btn" onClick={()=>onReplyClick(message)}>
+                                                        <img
+                                                            src="/CommentsCardIcon.svg"
+                                                            className="issue-type-icon"
+                                                            alt="news title image"
+                                                        />
+                                                        <span class="ms-2">Reply</span>
+                                                    </Button>
+                                                </div>
         </div>
     </div>
         </li>
@@ -76,7 +85,7 @@ const ChatChannel = ({messages, handleCommentSubmit}) => {
       {selectedMessage !== null && (
 			<div>
 				<p>Replying to: {selectedMessage.comment} <i onClick={()=> setSelectedMessage(null)}><img
-                                src="/UserCardIcon.svg"
+                                src="/deleteIcon.svg"
                                 className="issue-type-icon"
                                 alt="news title image"
                             /></i></p>

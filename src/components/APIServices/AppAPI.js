@@ -56,3 +56,13 @@ export const saveComment = async(payload)=>{
 export const getComments = async(issueId)=>{
     return await backendAPI.get(URL.SAVE_COMMENT+"/"+issueId)
 }
+
+export const getHotIsues = async()=>{
+    return await backendAPI.get(URL.GET_HOT_ISSUES)
+}
+export const getGeneralIsues = async()=>{
+    return await backendAPI.get(URL.GET_GENERAL_ISSUES)
+}
+export const getSwatchBharathIsues = async()=>{
+    return await backendAPI.get(URL.GET_SWATCHBHARATH_ISSUES)
+}

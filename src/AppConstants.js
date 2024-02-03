@@ -27,4 +27,6 @@ export const GENERAL_ISSUES= [
     "Agricultural Distress",
     "Women’s Safety"]
 export const FILE_ACCEPTED_FORMATS = ['png',"jpeg","jpg"]
+export const SUPPORT = "support"
+export const UNSUPPORT = "unsupport"
 export default AppConstants;

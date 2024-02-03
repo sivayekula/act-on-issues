@@ -12,8 +12,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import '../App.css';
 import AppConstants, { GENERAL_ISSUES } from '../AppConstants';
-import { getTime } from '../AppFunction';
-import { fecthIssues, fecthTrendingNews } from '../app/reducers/issueSlice';
+import { getTime, isUserLikedTheIsuue } from '../AppFunction';
+import { fecthHotIssues, fecthIssues, fecthTrendingNews } from '../app/reducers/issueSlice';
 import Header from './Header';
 import moment from 'moment-timezone';
 import ShareModal from './common/shareModal';
@@ -24,7 +24,7 @@ function Home() {
   const dispatch = useDispatch()
   const authUser = useSelector((state)=>state.userData.user)
   const trendingNews = useSelector(state=>state.issueData.trendingNews)
-  const {issues: data, hotIssues} = useSelector(state=>state.issueData)
+  const {issues: data, hotIssues, swatchBharathIssuses,generalIssues} = useSelector(state=>state.issueData)
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndtDate] = useState("");
   const [status, setStatus] = useState("Open");
@@ -58,6 +58,7 @@ function Home() {
 
   useEffect(()=>{
     dispatch(fecthTrendingNews())
+    dispatch(fecthHotIssues())
   },[])
 
   useEffect(()=>{
@@ -88,7 +89,7 @@ function Home() {
 
   const handleClearBtn = (mobFlag=false)=>{
     if(mobFlag){
-      setStatus("All")
+      setStatus("Open")
       updateLocFilter(null)
       setLatLng(null)
     }else{
@@ -103,6 +104,8 @@ function Home() {
     setEndtDate("")
     setShowDatePicker(false)
   }
+
+  
 
   const handleSearch = (e)=>{
     setSearchKey(e.target.value)
@@ -156,30 +159,22 @@ function Home() {
                 <div className='center-issues-cards-main-blk'>
                   {/* Header Search block */} 
                     {/* Hot Issues slider block */}
-                    <div className='news-img-slider-blk mb-3'>
+                    {hotIssues.length>0&&
+                      <div className='news-img-slider-blk mb-3'>
                         <Carousel>
-                            <Carousel.Item>
-                                <img
-                                    className="d-block w-100"
-                                      src="./water-issue.jpg"
-                                    alt="First slide"
-                                />
-                                <Carousel.Caption>
-                                    <h5>hot Issue1</h5>
-                                </Carousel.Caption>
-                            </Carousel.Item>
-                            <Carousel.Item>
-                                <img
-                                    className="d-block w-100"
-                                      src="./water-issue.jpg"
-                                    alt="Second slide"
-                                />
-                                <Carousel.Caption>
-                                    <h5>hot Issue2</h5>
-                                </Carousel.Caption>
-                            </Carousel.Item>
+                        {hotIssues.map(issue=>(
+                          <Carousel.Item onClick={()=>{gotoDetails(issue._id)}}>
+                              <img
+                                  className="d-block w-100"
+                                    src={process.env.REACT_APP_PROFILE_URL+"/issues/"+issue.images[0]}
+                                  alt="First slide"
+                              />
+                              <Carousel.Caption>
+                                  <h5>{issue.title}</h5>
+                              </Carousel.Caption>
+                          </Carousel.Item>))}
                         </Carousel>
-                      </div>
+                      </div>}
 
                   {/* Header Search block */}
 
@@ -203,105 +198,65 @@ function Home() {
                     </div>
 
                     <div className="hide-on-web show-on-mobile">
-                              <Dropdown align="start" autoClose="outside">
-                                <Dropdown.Toggle id="dropdown-basic" className='icon-dropdown notificaation-dropdown filter-dropdown-mobile'>
-                                    <img
-                                        src="./FilterIcon.svg"
-                                        className="d-inline-block align-top"
-                                        alt="Notifications"
-                                    />
-                                </Dropdown.Toggle>
+                      <Dropdown align="start" autoClose="outside">
+                        <Dropdown.Toggle id="dropdown-basic" className='icon-dropdown notificaation-dropdown filter-dropdown-mobile'>
+                          <img
+                            src="./FilterIcon.svg"
+                            className="d-inline-block align-top"
+                            alt="Notifications"/>
+                        </Dropdown.Toggle>
 
-                                <Dropdown.Menu className='mobile-filter-dropdown-blk'>
-                                    <Dropdown.Item className="mobile-filter-drop-item">
-                                          <label className='font-weight-500'>Status</label>
-                                          <Dropdown className="mobile-filter-dropdown">
-                                              <Dropdown.Toggle id="dropdown-autoclose-outside">
-                                                  All
-                                              </Dropdown.Toggle>
+                        <Dropdown.Menu className='mobile-filter-dropdown-blk'>
+                          <Dropdown.Item className="mobile-filter-drop-item">
+                            <label className='font-weight-500'>Status</label>
+                            <Dropdown className="mobile-filter-dropdown" onSelect={(eventKey)=>setStatus(eventKey)}>
+                              <Dropdown.Toggle id="dropdown-autoclose-outside" >
+                                {status}
+                              </Dropdown.Toggle>
 
-                                              <Dropdown.Menu>
-                                                  <Dropdown.Item>All</Dropdown.Item>
-                                                  <Dropdown.Item>Open</Dropdown.Item>
-                                                  <Dropdown.Item>Closed</Dropdown.Item>
-                                                  <Dropdown.Item>Myposts</Dropdown.Item>
-                                              </Dropdown.Menu>
-                                          </Dropdown>
-                                      </Dropdown.Item>
-                                      <Dropdown.Item className="mobile-filter-drop-item">
-                                          <label className='font-weight-500'>Location</label>
-                                          <Dropdown className="mobile-filter-dropdown" autoClose="outside">
-                                              <Dropdown.Toggle id="dropdown-autoclose-outside">
-                                                  All
-                                              </Dropdown.Toggle>
-
-                                              <Dropdown.Menu>
-                                                  <Dropdown.Item className="mobile-filter-drop-item">
-                                                      <InputGroup className="">
-
-                                                          <Form.Control
-                                                              placeholder="Search…"
-                                                              aria-label="Search…"
-                                                              aria-describedby="basic-addon1"
-                                                          />
-                                                          <InputGroup.Text id="basic-addon1"><img
-                                                              src="./LocationPinIcon.svg"
-                                                              className="issue-search-icon"
-                                                              alt="Aoi search"
-                                                          /></InputGroup.Text>
-                                                      </InputGroup>
-                                                  </Dropdown.Item>
-
-                                              </Dropdown.Menu>
-                                          </Dropdown>
-                                      </Dropdown.Item>
-                                      <Dropdown.Item className="mobile-filter-drop-item">
-                                          <label className='font-weight-500'>Area</label>
-                                          <Dropdown className="mobile-filter-dropdown" autoClose="outside">
-                                              <Dropdown.Toggle id="dropdown-autoclose-outside">
-                                                  All
-                                              </Dropdown.Toggle>
-
-                                              <Dropdown.Menu>
-                                                  <Dropdown.Item className="mobile-filter-drop-item">
-                                                      <InputGroup className="">
-
-                                                          <Form.Control
-                                                              placeholder="Search…"
-                                                              aria-label="Search…"
-                                                              aria-describedby="basic-addon1"
-                                                          />
-                                                          <InputGroup.Text id="basic-addon1"><img
-                                                              src="./LocationPinIcon.svg"
-                                                              className="issue-search-icon"
-                                                              alt="Aoi search"
-                                                          /></InputGroup.Text>
-                                                      </InputGroup>
-                                                  </Dropdown.Item>
-
-                                              </Dropdown.Menu>
-                                          </Dropdown>
-                                      </Dropdown.Item>
-                                      <Dropdown.Item className="mobile-filter-drop-item datepicker-input-blk">
-                                          <label className='font-weight-500'>Start Date</label>
-                                          <DatePicker showIcon selected={startDate} onChange={(date) => setStartDate(date)} />
-                                      </Dropdown.Item>
-                                      <Dropdown.Item className="mobile-filter-drop-item datepicker-input-blk">
-                                          <label className='font-weight-500'>End Date</label>
-                                          <DatePicker showIcon selected={startDate} onChange={(date) => setStartDate(date)} />
-                                      </Dropdown.Item>
-
-                                      <div className="mob-filters-btns-blk">
-                                          <Button type="submit" className='aoi-primary-btn full-btn'>Apply</Button>
-                                          <Button type="submit" className='aoi-secondary-btn full-btn'>Clear</Button>
-                                      </div>  
-                                      
-                                    
-
-                                </Dropdown.Menu>
-                                </Dropdown>
-                        </div>
-
+                              <Dropdown.Menu>
+                                <Dropdown.Item eventKey="All">All</Dropdown.Item>
+                                <Dropdown.Item eventKey="Open">Open</Dropdown.Item>
+                                <Dropdown.Item eventKey="Resolved">Resolved</Dropdown.Item>
+                              </Dropdown.Menu>
+                            </Dropdown>
+                          </Dropdown.Item>
+                          <Dropdown.Item className="mobile-filter-drop-item">
+                            <label className='font-weight-500'>Location</label>
+                            <Dropdown className="mobile-filter-dropdown">
+                              <Dropdown.Toggle id="dropdown-autoclose-outside">
+                                {locFilter?locFilter.label:"All"}
+                              </Dropdown.Toggle>
+                              <Dropdown.Menu>
+                                <Dropdown.Item className="mobile-filter-drop-item">
+                                <GooglePlacesAutocomplete
+                                  apiKey={process.env.REACT_APP_GOOGLE_API_KEY}
+                                  selectProps={{
+                                    value:locFilter,
+                                    onChange: handlePlace,
+                                    GooglePlacesDetailsQuery:{ fields: "geometry" },
+                                    placeholder:"Search",
+                                  }}                     
+                                /> 
+                                </Dropdown.Item>
+                              </Dropdown.Menu>
+                            </Dropdown>
+                          </Dropdown.Item>
+                          <Dropdown.Item className="mobile-filter-drop-item datepicker-input-blk">
+                            <label className='font-weight-500'>Start Date</label>
+                            <DatePicker showIcon selected={startDate} onChange={(date) => setStartDate(date)} />
+                          </Dropdown.Item>
+                          <Dropdown.Item className="mobile-filter-drop-item datepicker-input-blk">
+                            <label className='font-weight-500'>End Date</label>
+                            <DatePicker showIcon selected={endDate} onChange={(date) => setEndtDate(date)} />
+                          </Dropdown.Item>
+                          <div className="mob-filters-btns-blk">
+                            <Button type="submit" className='aoi-primary-btn full-btn' onClick={handleDateFilters} disabled={startDate==""||endDate==''}>Apply</Button>
+                            <Button type="submit" className='aoi-secondary-btn full-btn' onClick={()=>handleClearBtn(true)}>Reset</Button>
+                          </div>  
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    </div>
                   </div>
                   
                    {/* Filters block */} 
@@ -351,7 +306,7 @@ function Home() {
                         </NavDropdown.Item>
                         <div className="mob-filters-btns-blk">
                             <Button className='aoi-primary-btn date-picker-btns' onClick={handleDateFilters} disabled={startDate==""||endDate==''}>Apply</Button>
-                            <Button className='aoi-secondary-btn date-picker-btns' onClick={handleClearBtn}>Clear</Button>
+                            <Button className='aoi-secondary-btn date-picker-btns' onClick={handleClearBtn}>Cancel</Button>
                           </div> 
                       </NavDropdown>
                     </div>
@@ -361,6 +316,7 @@ function Home() {
                   <div className='issues-cards-list-blk d-flex flex-column aoi-gap-1'>
                   
                     {issues.map(issue=>{
+                      
                       return(
                         <div className='news-card issue-info-card' key={issue._id}>
                             <div className='d-flex aoi-gap-1 p-3' onClick={()=>{gotoDetails(issue._id)}}>
@@ -406,12 +362,13 @@ function Home() {
                                     className="issue-card-img"
                                     alt="news title image"
                                   />
-                                    <span className='imgs-count samll-size'>4</span>
+                                    <span className='imgs-count samll-size'>{issue.images.length}</span>
+                                    {issue.status === "resolved" &&
                                       <img 
                                           src="./GreenTick.svg"
                                           className="resolved-tick-icon"
                                           alt="resolved"
-                                      />
+                                      />}
                               </div>
                             </div>
                             <div className='issue-card-acions-blk d-flex align-items-center justify-content-between'>
@@ -426,19 +383,27 @@ function Home() {
                                     </div>
                                     <div className='issue-icon-item d-flex align-items-center aoi-gap-off' onClick={()=>{gotoDetails(issue._id)}}>
                                         <img
-                                            src="./FlagCardIcon.svg"
+                                              src={isUserLikedTheIsuue(issue,authUser)}
                                             className="card-flag-icon"
                                             alt="news title image"
                                         />
-                                        <span className='issue-type-info-txt'><span>ISupport</span><span>({issue.flagsCount})</span></span>
-                                    </div>
+                                        <span className='issue-type-info-txt'><span>iSupport</span><span>({issue.flags.length})</span></span>
+                                      </div>
+                                      {/* <div className='issue-icon-item d-flex align-items-center aoi-gap-off'>
+                                          <img
+                                              src="./unsupportIcon.svg"
+                                              className="card-flag-icon"
+                                              alt="news title image"
+                                          />
+                                          <span className='issue-type-info-txt'><span>UnSupport</span><span>(2)</span></span>
+                                      </div> */}
                                     <div className='issue-icon-item d-flex align-items-center aoi-gap-off' onClick={()=>{gotoDetails(issue._id)}}>
                                         <img
                                             src="./ViewsCardIcon.svg"
                                             className="issue-type-icon"
                                             alt="news title image"
                                         />
-                                        <span className='issue-type-info-txt'><span>Views</span><span>({issue.viewsCount})</span></span>
+                                        <span className='issue-type-info-txt'><span>View</span><span>({issue.viewsCount})</span></span>
                                     </div>
                                     <div className='issue-icon-item d-flex align-items-center aoi-gap-off' onClick={()=>{setShowShareModal(true)}}>
                                         <img
@@ -450,7 +415,7 @@ function Home() {
                                     </div>
                                 </div>
                                 <div className='right-card-actions'>
-                                <Button variant="link" className='txt-btn'>Acknowledge</Button>
+                                {/* <Button variant="link" className='txt-btn'>Acknowledge</Button> */}
                                 {showShareModal&&<ShareModal show={showShareModal} handleHide={()=>{setShowShareModal(false)}}/>}
                                 </div>
                             </div>
@@ -462,54 +427,40 @@ function Home() {
                 </div>
 
                 <div className='right-news-slider-main-blk d-flex flex-column aoi-gap-1'>
+                     {swatchBharathIssuses.length>0&&
                      <div className='news-img-slider-blk'>
                       <Carousel interval={null}>
+                        {swatchBharathIssuses.map(issue=>(
                           <Carousel.Item>
                             <img
                               className="d-block w-100"
-                              src="./Swachh-Bharat-issue1.jpg"
+                              src={process.env.REACT_APP_PROFILE_URL+"/issues/"+issue.images[0]}
                               alt="First slide"
                             />
                             <Carousel.Caption>
-                              <h5>Swatch Bharat Issue1</h5>
+                              <h5>{issue.title}</h5>
                             </Carousel.Caption>
-                          </Carousel.Item>
-                          <Carousel.Item>  
-                            <img
-                              className="d-block w-100"
-                              src="./water-issue.jpg"
-                              alt="Second slide"
-                            />
-                            <Carousel.Caption>
-                              <h5>Swatch Bharat Issue2</h5>
-                            </Carousel.Caption>
-                          </Carousel.Item>
+                          </Carousel.Item>))}
+                          
                         </Carousel>
-                     </div>
+                     </div>}
+                     {generalIssues.length>0&&
                      <div className='news-img-slider-blk'>
                       <Carousel interval={null}>
+                        {generalIssues.map(issue=>(
                           <Carousel.Item>
                             <img
                               className="d-block w-100"
-                              src="./water-issue.jpg"
+                              src={process.env.REACT_APP_PROFILE_URL+"/issues/"+issue.images[0]}
                               alt="First slide"
                             />
                             <Carousel.Caption>
-                              <h5>General Issue1</h5>
+                              <h5>{issue.title}</h5>
                             </Carousel.Caption>
-                          </Carousel.Item>
-                          <Carousel.Item>  
-                            <img
-                              className="d-block w-100"
-                              src="./Swachh-Bharat-issue1.jpg"
-                              alt="Second slide"
-                            />
-                            <Carousel.Caption>
-                              <h5>General Issue1</h5>
-                            </Carousel.Caption>
-                          </Carousel.Item>
+                          </Carousel.Item>))}
+                          
                         </Carousel>
-                     </div>
+                     </div>}
                 </div>
             </div> 
       </div>

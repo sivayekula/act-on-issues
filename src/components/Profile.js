@@ -16,13 +16,13 @@ function Profile() {
 	const navigate = useNavigate()
 	const dispatch = useDispatch()
 	const profileData = useSelector(state => state.userData.profileData)
+	
 	const [proImg, setProImg] = useState("./ProfilePicGrey.svg")
 	const [idFiles, setIdFiles] = useState(null)
 	const [profile, updateProfile] = useState({...profileData})
 	const [emailEdit, updateEmailEdit] = useState(false)
 	const [modileEdit, updateMobileEdit] = useState(false)
 	const [verifyForm, setVerifyForm] = useState(false)
-
 	const gotoURl = () => {
 		navigate("/")
 	}
@@ -166,18 +166,18 @@ function Profile() {
 									<Form.Label>User Name</Form.Label>
 									<Form.Control type="text" placeholder="Enter user name"  value={profile.name} name="name" onChange={handleChange}/>
 								</Form.Group>
-								{/* <Form.Group className="mb-3" controlId="email" >
+								<Form.Group className="mb-3" controlId="email" >
 									<Form.Label>Email</Form.Label>
-									<Form.Control type="text" placeholder="Enter email" value={profile.email} name="email" disabled={!emailEdit} onChange={handleChange}/>
-									<div className="form-actions-btns-blk d-flex">
+									<Form.Control type="text" placeholder="Enter email" value={profile.email} name="email" disabled={true} onChange={handleChange}/>
+									{/* <div className="form-actions-btns-blk d-flex">
 										{emailEdit?
 										<div>
 											<Button className="icon-btn" onClick={()=>{updateEmailEdit(false)}}><img src="./CloseRedIcon.svg" className="form-edit-icon" alt="Cancel" /></Button>
 											<Button className="icon-btn" ><img src="./TickIcon.svg" className="form-edit-icon" alt="Save" /></Button>
 										</div>:
 										<Button className="icon-btn" onClick={()=>{updateEmailEdit(true)}}><img src="./EditIcon.svg" className="form-edit-icon" alt="Edit Email" /></Button>}
-									</div>
-								</Form.Group> */}
+									</div> */}
+								</Form.Group>
 								<Form.Group className="mb-3" controlId="phone">
 									<Form.Label>Phone</Form.Label>
 									<Form.Control type="text" placeholder="Enter phone number" value={profile.mobile} name="mobile" disabled onChange={handleChange}/>
