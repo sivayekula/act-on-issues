@@ -123,7 +123,7 @@ function DetailsScreen() {
 
     return (
         <div className='main-page'>
-           <Header login={login} />
+           <Header login={login} handleLogin={(value)=>setLogin(value)}/>
             {issue&&
             <div className='issue-details-blk d-flex'>
                 <div className='back-icon-blk pe-3'>

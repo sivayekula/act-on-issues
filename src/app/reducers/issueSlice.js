@@ -9,7 +9,8 @@ const initialState = {
     hotIssues: [],
     generalIssues:[],
     swatchBharathIssuses:[],
-    issueDetails:null
+    issueDetails:null,
+    isLoading:false
 }
  
 
@@ -76,19 +77,22 @@ export const issueSlice = createSlice({
     },
     extraReducers:(builder)=>{
         builder.addCase(fecthTrendingNews.fulfilled,(state,{payload})=>{
-            state.isLoading = false
+            // state.isLoading = false
             state.trendingNews = payload
+        });
+        builder.addCase(fecthIssues.pending,(state)=>{
+            state.isLoading = true
         });
         builder.addCase(fecthIssues.fulfilled,(state,{payload})=>{
             state.isLoading = false
             state.issues = payload.data?payload.data:[]
         });
         builder.addCase(fecthIssueDetails.fulfilled,(state,{payload})=>{
-            state.isLoading = false
+            // state.isLoading = false
             state.issueDetails = payload
         });
         builder.addCase(fecthHotIssues.fulfilled,(state,{payload})=>{
-            state.isLoading = false
+            // state.isLoading = false
             state.hotIssues = payload.hotIssues
             state.swatchBharathIssuses = payload.swatchBharathIsues
         });

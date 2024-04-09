@@ -880,6 +880,9 @@ background-color: var(--white-color);
   }
 } 
 @media (max-width:768px){
+  .dropdown-menu.show {
+    width:100%;
+  }
   .left-news-list-main-blk.d-flex, .right-news-slider-main-blk.d-flex {
     display: none!important;
   }
@@ -1020,7 +1023,7 @@ background-color: var(--white-color);
 	}
 } 
 
-/* Responsive Styles start */
+/* Responsive Styles End */
 
 .toast-success{
   border-radius: 1px !important;
@@ -1105,6 +1108,3 @@ background-color: var(--white-color);
   opacity: 0.75;
 }
 
-.dropdown-menu.show {
-  width: 100%;
-}

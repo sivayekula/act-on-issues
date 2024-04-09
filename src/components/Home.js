@@ -17,6 +17,7 @@ import { fecthHotIssues, fecthIssues, fecthTrendingNews } from '../app/reducers/
 import Header from './Header';
 import moment from 'moment-timezone';
 import ShareModal from './common/shareModal';
+import Loader from './common/UI/Loader';
 
 
 
@@ -24,7 +25,7 @@ function Home() {
   const dispatch = useDispatch()
   const authUser = useSelector((state)=>state.userData.user)
   const trendingNews = useSelector(state=>state.issueData.trendingNews)
-  const {issues: data, hotIssues, swatchBharathIssuses,generalIssues} = useSelector(state=>state.issueData)
+  const {issues: data, hotIssues, swatchBharathIssuses,generalIssues, isLoading} = useSelector(state=>state.issueData)
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndtDate] = useState("");
   const [status, setStatus] = useState("Open");
@@ -37,7 +38,7 @@ function Home() {
   const [login, setLogin]= useState(false);
   const [showShareModal, setShowShareModal] = useState(false)     
   const navigate = useNavigate()
-
+  const today = moment().toDate()
   const handlePlace = (value)=>{
     geocodeByAddress(value.label)
     .then(results => getLatLng(results[0]))
@@ -109,13 +110,13 @@ function Home() {
 
   const handleSearch = (e)=>{
     setSearchKey(e.target.value)
-    let dumyList = data.filter(issue=>(issue.title.toLowerCase().includes(e.target.value.toLowerCase())))
+    let dumyList = data.filter(issue=>(issue?.categoryId?.name.toLowerCase().includes(e.target.value.toLowerCase())))
     setIssues(dumyList)
   }
   
   return (
     <div className='main-page'>
-      <Header login={login}/>
+      <Header login={login} handleLogin={(value)=>setLogin(value)}/>
       <div className='main-body-wrapper'>
            <div className='aoi-gap-1 d-flex'>
                 <div className='left-news-list-main-blk d-flex flex-column aoi-gap-1'>
@@ -138,7 +139,7 @@ function Home() {
                                 </div>
                               </a>
                           </div>
-                        ))}
+                        ))}                        
                       </div>
                     </div>
                     {/* General news card */}
@@ -244,14 +245,14 @@ function Home() {
                           </Dropdown.Item>
                           <Dropdown.Item className="mobile-filter-drop-item datepicker-input-blk">
                             <label className='font-weight-500'>Start Date</label>
-                            <DatePicker showIcon selected={startDate} onChange={(date) => setStartDate(date)} />
+                            <DatePicker showIcon selected={startDate} onChange={(date) => setStartDate(date)} maxDate={today}/>
                           </Dropdown.Item>
                           <Dropdown.Item className="mobile-filter-drop-item datepicker-input-blk">
                             <label className='font-weight-500'>End Date</label>
-                            <DatePicker showIcon selected={endDate} onChange={(date) => setEndtDate(date)} />
+                            <DatePicker showIcon selected={endDate} onChange={(date) => setEndtDate(date)} maxDate={today} disabled={startDate==""}/>
                           </Dropdown.Item>
                           <div className="mob-filters-btns-blk">
-                            <Button type="submit" className='aoi-primary-btn full-btn' onClick={handleDateFilters} disabled={startDate==""||endDate==''}>Apply</Button>
+                            <Button type="submit" className='aoi-primary-btn full-btn' onClick={handleDateFilters} disabled={startDate==""||endDate==""}>Apply</Button>
                             <Button type="submit" className='aoi-secondary-btn full-btn' onClick={()=>handleClearBtn(true)}>Reset</Button>
                           </div>  
                         </Dropdown.Menu>
@@ -273,7 +274,7 @@ function Home() {
 
                     <div className='filter-item-blk d-flex font-size14'>
                       <label className='font-weight-500'>Location:</label>
-                      <NavDropdown autoClose="outside" show={dropdownOpen} title={locFilter?locFilter.label:"All"} id="basic-nav-dropdown" className='loc-filter-dropdown ps-2' onToggle={()=>setDropdownOpen(true)}>
+                      <NavDropdown autoClose="outside" show={dropdownOpen} title={locFilter?locFilter.label:"All"} id="basic-nav-dropdown" className='loc-filter-dropdown ps-2' onToggle={()=>setDropdownOpen(!dropdownOpen)}>
                         <NavDropdown.Item className='filter-input-blk'>
                         <GooglePlacesAutocomplete
                           apiKey={process.env.REACT_APP_GOOGLE_API_KEY}
@@ -294,19 +295,19 @@ function Home() {
                     <div className='filter-item-blk datepicker-filter-blk d-flex font-size14'>
                       <label className='font-weight-500'>Date:</label>
                       <NavDropdown autoClose="outside" show={showDatePicker} title={startDate&&endDate?`${moment(startDate).format("DD-MM-YY")} to ${moment(endDate).format("DD-MM-YY")}`:"All"} 
-                        onToggle={()=>setShowDatePicker(true)}
+                        onToggle={()=>setShowDatePicker(!showDatePicker)}
                         id="basic-nav-dropdown" className='loc-filter-dropdown ps-2'>
                         <NavDropdown.Item className='datepicker-input-blk d-flex'>
                           <Form.Label className='font-size14 black-text'>Start Date</Form.Label>
-                          <DatePicker showIcon selected={startDate} onChange={(date) => setStartDate(date)} />
+                          <DatePicker showIcon selected={startDate} onChange={(date) => setStartDate(date)} maxDate={today}/>
                         </NavDropdown.Item>
                         <NavDropdown.Item className='datepicker-input-blk d-flex'>
                           <Form.Label className='font-size14 black-text'>End Date</Form.Label> 
-                          <DatePicker showIcon selected={endDate} onChange={(date) => setEndtDate(date)} />
+                          <DatePicker showIcon selected={endDate} onChange={(date) => setEndtDate(date)} maxDate={today} disabled={startDate==""}/>
                         </NavDropdown.Item>
                         <div className="mob-filters-btns-blk">
                             <Button className='aoi-primary-btn date-picker-btns' onClick={handleDateFilters} disabled={startDate==""||endDate==''}>Apply</Button>
-                            <Button className='aoi-secondary-btn date-picker-btns' onClick={handleClearBtn}>Cancel</Button>
+                            <Button className='aoi-secondary-btn date-picker-btns' onClick={()=>{handleClearBtn()}} disabled={startDate==""||endDate==''}>Reset</Button>
                           </div> 
                       </NavDropdown>
                     </div>
@@ -314,7 +315,7 @@ function Home() {
 
                   {/* Issues card */} 
                   <div className='issues-cards-list-blk d-flex flex-column aoi-gap-1'>
-                  
+                  {isLoading&&<Loader/>}
                     {issues.map(issue=>{
                       
                       return(
@@ -389,14 +390,6 @@ function Home() {
                                         />
                                         <span className='issue-type-info-txt'><span>iSupport</span><span>({issue.flags.length})</span></span>
                                       </div>
-                                      {/* <div className='issue-icon-item d-flex align-items-center aoi-gap-off'>
-                                          <img
-                                              src="./unsupportIcon.svg"
-                                              className="card-flag-icon"
-                                              alt="news title image"
-                                          />
-                                          <span className='issue-type-info-txt'><span>UnSupport</span><span>(2)</span></span>
-                                      </div> */}
                                     <div className='issue-icon-item d-flex align-items-center aoi-gap-off' onClick={()=>{gotoDetails(issue._id)}}>
                                         <img
                                             src="./ViewsCardIcon.svg"

@@ -1,6 +1,7 @@
 const AppConstants = {
     SIGNUP:'signup',
     LOGIN:"login",
+    FORGOT_PASSWORD:"forgotPassword",
     USERNAME_LENGTH:200,
     PHONE_LENGTH:10,
     RAISE_ISSUE:"raiseIssue",

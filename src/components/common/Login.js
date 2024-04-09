@@ -111,6 +111,9 @@ const Login = ({show, handleClose}) =>{
               <div className='alt-login-blk pt-2'>
                 <span className='font-size14 pe-2'>Don’t have an account? </span><Button variant="link" className='txt-btn font-size14' onClick={()=>handleClose(AppConstants.SIGNUP,true)}>Signup</Button>
               </div>
+              <div className='alt-login-blk pt-2'>
+                <Button variant="link" className='txt-btn font-size14' onClick={()=>handleClose(AppConstants.FORGOT_PASSWORD,true)}>Forgot Password</Button>
+              </div>
               <div className='terms-and-conditions-blk font-size14 pt-2'>
                 <span>By continuing, you are setting up a Act on issue account and agree to our <a href='#' className=''>User Agreement</a> and <a href='#' className=''>Privacy Policy</a>.</span>
               </div> 

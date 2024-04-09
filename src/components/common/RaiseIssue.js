@@ -41,7 +41,7 @@ const RaiseIssue = ({show, handleClose}) =>{
       issueObj.description.length>=15 &&
       issueObj.address!=="" &&
       (issueObj.isSwathyaBharat||issueObj.category.length>1) &&
-      issueObj.images.length>0 &&
+      // issueObj.images.length>0 &&
       showOther(true)
     ){
       valid = true
@@ -145,7 +145,7 @@ const RaiseIssue = ({show, handleClose}) =>{
                 </Form.Group>
                 <Form.Check
                   inline
-                  label="Swathya Bharat"
+                  label="Swachh Bharat"
                   name="isSwathyaBharat"
                   type='checkbox'
                   checked={issueObj.isSwathyaBharat}
