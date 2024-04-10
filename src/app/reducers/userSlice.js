@@ -2,13 +2,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { APIAlertNotify, alertNotify } from "../../AppFunction";
 import { getCategories, getProfileDetails } from "../../components/APIServices/AppAPI";
-
+const emptyModalObj = {signup:false,login:false,raiseIssue:false,forgotPassword:false}
 const initialState = {
     user:null,
     isLoading:false,
     profileData:{},
     categories:[],
-    stack:[]
+    stack:[],
+    showModal:{...emptyModalObj}
 }
  
 export const fetchProfileDetails = createAsyncThunk("user/fetchProfileDetails",async()=>{
@@ -74,6 +75,12 @@ export const userSlice = createSlice({
             state.profileData = {}
             state.stack = []
         },
+        updateModal:(state, {payload})=>{
+            state.showModal = {...emptyModalObj, [payload.key]:payload.value}
+        },
+        updateLoading:(state,{payload})=>{
+            state.isLoading=payload
+        },
     },
     extraReducers:(builder)=>{
         builder.addCase(fetchProfileDetails.pending,(state)=>{
@@ -95,7 +102,9 @@ export const {
     setUserData,
     clearSession,
     setProfileData,
-    updateStack
+    updateStack,
+    updateModal,
+    updateLoading,
 } = userSlice.actions
 
 export default userSlice.reducers

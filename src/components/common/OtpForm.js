@@ -2,10 +2,10 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 import OtpInput from 'react-otp-input';
- 
+import {  useSelector } from 'react-redux';
 
 const OTPForm = ({otp, handleChange, verifyOtp, userObj, resendOtp}) =>{
-
+	const isLoading = useSelector((state)=>state.userData.isLoading)
   return(<>
 		<h1 className='signup-modal-title'>Verify OTP</h1>
 		<div className='alt-login-blk pb-4'>
@@ -19,9 +19,9 @@ const OTPForm = ({otp, handleChange, verifyOtp, userObj, resendOtp}) =>{
 				renderSeparator={<span>-</span>}
 				renderInput={(props) => <input {...props} />}
 			/>
-			<Button variant="link" className='txt-btn align-self-end mb-4 mt-4' onClick={resendOtp}>Resend OTP</Button>
+			<Button variant="link" className='txt-btn align-self-end mb-4 mt-4' onClick={resendOtp} disabled={isLoading}>Resend OTP</Button>
 		</div>
-		<Button type="button" className='aoi-primary-btn full-btn' onClick={verifyOtp}>Verify OTP</Button>
+		<Button type="button" className='aoi-primary-btn full-btn' onClick={verifyOtp} disabled={isLoading}>Verify OTP</Button>
 	</>)
 }
 export default  OTPForm;

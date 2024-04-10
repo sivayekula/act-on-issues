@@ -6,6 +6,7 @@ import {getHotIsues, getIssueDetails, getIssues, getTrendingNews } from "../../c
 const initialState = {
     trendingNews:[],
     issues:[],
+    totalRecords:0,
     hotIssues: [],
     generalIssues:[],
     swatchBharathIssuses:[],
@@ -31,7 +32,7 @@ export const fecthIssues = createAsyncThunk("issue/fecthIssues",async(params)=>{
     try{
         const res = await getIssues(params)
         if(res.status === 200){
-            return res.data
+            return res.data.data
         }else{
             throw new Error(res)
         }
@@ -86,6 +87,7 @@ export const issueSlice = createSlice({
         builder.addCase(fecthIssues.fulfilled,(state,{payload})=>{
             state.isLoading = false
             state.issues = payload.data?payload.data:[]
+            state.totalRecords = payload.metadata[0].totalIssues
         });
         builder.addCase(fecthIssueDetails.fulfilled,(state,{payload})=>{
             // state.isLoading = false

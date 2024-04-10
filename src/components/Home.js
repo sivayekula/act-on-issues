@@ -18,14 +18,16 @@ import Header from './Header';
 import moment from 'moment-timezone';
 import ShareModal from './common/shareModal';
 import Loader from './common/UI/Loader';
+import PaginationComponent from './common/UI/Pagination';
+import { updateModal } from '../app/reducers/userSlice';
 
 
 
 function Home() {
   const dispatch = useDispatch()
-  const authUser = useSelector((state)=>state.userData.user)
+  const {user:authUser, showModal:{login}} = useSelector((state)=>state.userData)
   const trendingNews = useSelector(state=>state.issueData.trendingNews)
-  const {issues: data, hotIssues, swatchBharathIssuses,generalIssues, isLoading} = useSelector(state=>state.issueData)
+  const {issues: data, hotIssues, swatchBharathIssuses,generalIssues,totalRecords, isLoading} = useSelector(state=>state.issueData)
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndtDate] = useState("");
   const [status, setStatus] = useState("Open");
@@ -35,8 +37,12 @@ function Home() {
   const [latLng, setLatLng] = useState(null)
   const [issues, setIssues] = useState(data)
   const [searchKey, setSearchKey] = useState("")
-  const [login, setLogin]= useState(false);
-  const [showShareModal, setShowShareModal] = useState(false)     
+  const [showShareModal, setShowShareModal] = useState(false)   
+  
+  //pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10); 
+
   const navigate = useNavigate()
   const today = moment().toDate()
   const handlePlace = (value)=>{
@@ -53,7 +59,7 @@ function Home() {
     if(authUser){
       navigate(`/details/${issueId}`)
     }else{
-      setLogin(true)
+      dispatch(updateModal({key:AppConstants.LOGIN,value:true}))
     }
   }
 
@@ -67,7 +73,7 @@ function Home() {
   },[data])
 
   useEffect(()=>{
-    let params = `status=${status}`
+    let params = `status=${status}&currentPage=${currentPage}`
     if(latLng){
       params = `${params}&lat=${latLng.lat}&lng=${latLng.lng}`
     }
@@ -77,7 +83,7 @@ function Home() {
      
     dispatch(fecthIssues(params))
      
-  },[status, locFilter])
+  },[status, locFilter, currentPage])
 
   const handleDateFilters = () =>{
     let params = `status=${status}&startDate=${moment(startDate).format("YYYY-MM-DD")}&endDate=${moment(endDate).format("YYYY-MM-DD")}`
@@ -105,8 +111,10 @@ function Home() {
     setEndtDate("")
     setShowDatePicker(false)
   }
-
-  
+ 
+  const onPageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   const handleSearch = (e)=>{
     setSearchKey(e.target.value)
@@ -114,9 +122,10 @@ function Home() {
     setIssues(dumyList)
   }
   
+
   return (
     <div className='main-page'>
-      <Header login={login} handleLogin={(value)=>setLogin(value)}/>
+      <Header/>
       <div className='main-body-wrapper'>
            <div className='aoi-gap-1 d-flex'>
                 <div className='left-news-list-main-blk d-flex flex-column aoi-gap-1'>
@@ -315,9 +324,8 @@ function Home() {
 
                   {/* Issues card */} 
                   <div className='issues-cards-list-blk d-flex flex-column aoi-gap-1'>
-                  {isLoading&&<Loader/>}
-                    {issues.map(issue=>{
-                      
+                    {isLoading&&<Loader/>}
+                    {issues.map(issue=>{                      
                       return(
                         <div className='news-card issue-info-card' key={issue._id}>
                             <div className='d-flex aoi-gap-1 p-3' onClick={()=>{gotoDetails(issue._id)}}>
@@ -388,7 +396,7 @@ function Home() {
                                             className="card-flag-icon"
                                             alt="news title image"
                                         />
-                                        <span className='issue-type-info-txt'><span>iSupport</span><span>({issue.flags.length})</span></span>
+                                        <span className='issue-type-info-txt'><span>iSupport</span><span>({issue.likesCount})</span></span>
                                       </div>
                                     <div className='issue-icon-item d-flex align-items-center aoi-gap-off' onClick={()=>{gotoDetails(issue._id)}}>
                                         <img
@@ -416,7 +424,8 @@ function Home() {
                       )
                     })}
                   </div>
-
+                  {/* <PaginationComponent 
+                  totalItems={totalRecords} itemsPerPage={itemsPerPage} onPageChange={onPageChange}/> */}
                 </div>
 
                 <div className='right-news-slider-main-blk d-flex flex-column aoi-gap-1'>

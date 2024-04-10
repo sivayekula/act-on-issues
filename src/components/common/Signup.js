@@ -80,6 +80,7 @@ const Signup = ({show, handleClose}) =>{
     reset()
   }
 
+
   const reset = ()=>{
     updateInputsData({...infoObj})
     setShowOtp(false)
@@ -105,7 +106,7 @@ const Signup = ({show, handleClose}) =>{
           size: 'invisible'}));
         setConfirmationResult(confirmation);
         updateUser(res.data.data)
-        alertNotify("Code sent to your mobile number", 200)
+        alertNotify(`Code sent to this +91${inputsData.loginas} number`, 200)
         setShowOtp(true)
       } else {
         throw new Error(res)

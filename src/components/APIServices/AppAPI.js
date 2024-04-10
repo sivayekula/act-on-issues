@@ -4,6 +4,7 @@ import {backendAPI} from "./BaseAPI"
 export const signupAPI = async(payload) =>{
     return await backendAPI.post(URL.SIGNUP,payload )
 }
+
 export const loginAPI = async(payload) =>{
     return await backendAPI.post(URL.LOGIN,payload)
 }
@@ -65,4 +66,11 @@ export const getGeneralIsues = async()=>{
 }
 export const getSwatchBharathIsues = async()=>{
     return await backendAPI.get(URL.GET_SWATCHBHARATH_ISSUES)
+}
+
+export const findUserByNumber = async(payload)=>{
+    return await backendAPI.post(URL.FIND_USER_BY_NUMBER,payload)
+}
+export const updatePassword = async(payload)=>{
+    return await backendAPI.post(URL.UPDATE_PASSWORD,payload)
 }

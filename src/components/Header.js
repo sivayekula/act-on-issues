@@ -11,21 +11,20 @@ import { Toaster } from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import AppConstants from '../AppConstants';
-import { clearSession, setUserData, updateStack } from '../app/reducers/userSlice';
+import { clearSession, setUserData, updateModal, updateStack } from '../app/reducers/userSlice';
 import Login from './common/Login';
 import RaiseIssue from './common/RaiseIssue';
 import Signup from './common/Signup';
 import ForgotPassword from './common/ForgotPassword';
 
-const Header = ({login= false,handleLogin}) => {
-  const authUser = useSelector((state)=>state.userData.user)
+const Header = () => {
+  const {user:authUser, showModal:showForm} = useSelector((state)=>state.userData)
   const dispatch = useDispatch()
-  const formObj = {signup:false,login:false,raiseIssue:false,forgotPassword:false}
-  const [showForm, setShowForm] = useState({...formObj})
+  // const formObj = {signup:false,login:false,raiseIssue:false,forgotPassword:false}
+  // const [showForm, setShowForm] = useState({...formObj})
   
   const handleShow = (type,value)=> {
-    setShowForm({...formObj,[type]:value})
-    handleLogin&&handleLogin(false)
+    dispatch(updateModal({key:type, value:value}))
   }
 
   let navigate = useNavigate()
@@ -48,9 +47,6 @@ const Header = ({login= false,handleLogin}) => {
       handleShow(AppConstants.LOGIN, true)
     }
   }
-  useEffect(()=>{
-    setShowForm({...formObj, login: login})
-  }, [login])
    
   return (
     <>

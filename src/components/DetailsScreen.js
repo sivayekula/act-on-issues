@@ -18,7 +18,6 @@ import { SUPPORT, UNSUPPORT } from '../AppConstants';
 
 function DetailsScreen() {
     const authUser = useSelector((state)=>state.userData.user)
-    const [login, setLogin]= useState(false);
 	let navigate = useNavigate();
     const dispatch = useDispatch()
     const params = useParams()
@@ -53,9 +52,7 @@ function DetailsScreen() {
 
 
 
-    const handleCommentEvent =()=>{
-        setLogin(true)
-    }
+    
 
     const saveViewCount= async ()=> {
         try {
@@ -123,7 +120,7 @@ function DetailsScreen() {
 
     return (
         <div className='main-page'>
-           <Header login={login} handleLogin={(value)=>setLogin(value)}/>
+           <Header/>
             {issue&&
             <div className='issue-details-blk d-flex'>
                 <div className='back-icon-blk pe-3'>
