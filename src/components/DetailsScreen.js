@@ -29,6 +29,7 @@ function DetailsScreen() {
     const [supportCount, setSupportCount] = useState(0)
     const [unsupportCount, setUnsupportCount] = useState(0)
     const [flagStatus, setFlagStatus] = useState(null)
+    const [open, setOpen]= useState(false)
 
 	const goToHome = ()=>{
 		navigate("/")
@@ -167,18 +168,26 @@ function DetailsScreen() {
                         {issue.description}
                     </div>
                     <div className='issue-all-images-blk'>
+                     
 
+                        <Lightbox
+                            open={open}
+                            close={() => setOpen(false)}
+                            slides={issue.images.map((item,index)=> ({
+                                src: `${process.env.REACT_APP_PROFILE_URL}/issues/${item}`,
+                                alt: `${index+1} slide`
+                            }))
+                        }/>
                      <div className='news-img-slider-blk'>
-                      <Carousel>
-                        {issue.images.map(item=> (
+                      <Carousel onClick={()=>{setOpen(true)}}>
+                        {issue.images.map((item,index)=> (
                           <Carousel.Item>
                             <img
                               className="d-block w-100"
                               src={`${process.env.REACT_APP_PROFILE_URL}/issues/${item}`}
-                              alt="First slide"
+                              alt={`${index+1} slide`}
                             />
                             <Carousel.Caption>
-                              {/* <h5>Swatch Bharat Issue1</h5> */}
                             </Carousel.Caption>
                           </Carousel.Item>
                           ))}

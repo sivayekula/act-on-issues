@@ -99,7 +99,7 @@ const Login = ({show, handleClose}) =>{
           <h1 className='signup-modal-title'>Login</h1>
           <div className='signup-form-blk'>
             <Form>
-              <Form.Group className="mb-3" controlId="email">
+              <Form.Group className="mb-3" controlId="loginas">
                 <Form.Label>Phone</Form.Label>
                 <Form.Control type="text" placeholder="Enter phone number" onChange={handleChange} value={inputsData.loginas} name="loginas" onBlur={verifyInput} />
               </Form.Group>

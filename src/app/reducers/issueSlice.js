@@ -87,7 +87,7 @@ export const issueSlice = createSlice({
         builder.addCase(fecthIssues.fulfilled,(state,{payload})=>{
             state.isLoading = false
             state.issues = payload.data?payload.data:[]
-            state.totalRecords = payload.metadata[0].totalIssues
+            state.totalRecords = payload.metadata[0]?.totalIssues||0
         });
         builder.addCase(fecthIssueDetails.fulfilled,(state,{payload})=>{
             // state.isLoading = false

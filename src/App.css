@@ -1108,3 +1108,7 @@ background-color: var(--white-color);
   opacity: 0.75;
 }
 
+.pagination-align{
+  margin-top: 15px;
+  float: right;
+}

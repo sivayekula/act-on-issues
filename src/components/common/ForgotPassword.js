@@ -12,7 +12,7 @@ import {auth} from '../../firebase';
 import OTPForm from "./OtpForm";
 import { updateLoading, updateModal } from "../../app/reducers/userSlice";
 
- const ForgotPassword = ({show, handleClose})=>{
+const ForgotPassword = ({show, handleClose})=>{
 	const dispatch = useDispatch()
 	const isLoading = useSelector((state)=>state.userData.isLoading)
 	const [inputsData, updateInputsData]  = useState({ loginas:"",password:"",confirmPassword:""})
@@ -21,119 +21,127 @@ import { updateLoading, updateModal } from "../../app/reducers/userSlice";
   const [user, updateUser] = useState({})
   const [confirmationResult, setConfirmationResult] = useState(null);
 	const [showPasswordReset, setShowPasswordReset] = useState(false)
+
+	 
 	const handleChange = (e)=>{
-			const {value,name} = e.target
-			let isValid = true
-			if(name === 'loginas'){
-				if(validatePhone(value)&&value.length > AppConstants.PHONE_LENGTH){
-					isValid = false   
-					alertNotify(VALIDATION_MESSAGES.MAX_LENGTH_REACHED)      
-				}
+		const {value,name} = e.target
+		let isValid = true
+		if(name === 'loginas'){
+			if(validatePhone(value)&&value.length > AppConstants.PHONE_LENGTH){
+				isValid = false   
+				alertNotify(VALIDATION_MESSAGES.MAX_LENGTH_REACHED)      
 			}
-			if(name === 'password'){
-				if(value.length > AppConstants.PHONE_LENGTH){
-					isValid = false   
-					alertNotify(VALIDATION_MESSAGES.MAX_LENGTH_REACHED)      
-				}
-			}
-			if(isValid)
-				updateInputsData({...inputsData,[name]:value})
 		}
+		if(name === 'password'){
+			if(value.length > AppConstants.PHONE_LENGTH){
+				isValid = false   
+				alertNotify(VALIDATION_MESSAGES.MAX_LENGTH_REACHED)      
+			}
+		}
+		if(isValid)
+			updateInputsData({...inputsData,[name]:value})
+	}
 
-		const handleHide = () =>{
-			handleClose(AppConstants.LOGIN,false)
-			reset()
-		}
+	const handleHide = () =>{
+		handleClose(AppConstants.LOGIN,false)
+		reset()
+	}
 	
-		const reset = ()=>{
-			updateInputsData({loginas:"",password:""})
-		}
+	const reset = ()=>{
+		updateInputsData({loginas:"",password:"",confirmPassword:""})
+		setShowOtp(false)
+		setOtp("")
+		updateUser({})
+		setConfirmationResult(null)
+		setShowPasswordReset(false)
+	}
 
-		const verifyInput = (e)=>{
-			if(!validateEmail(e.target.value)&&!validatePhone(e.target.value)){
-				alertNotify(VALIDATION_MESSAGES.INVALID_INPUT)
-			}
+	const verifyInput = (e)=>{
+		if(!validateEmail(e.target.value)&&!validatePhone(e.target.value)){
+			alertNotify(VALIDATION_MESSAGES.INVALID_INPUT)
 		}
+	}
 
-		const disableButton = ()=>{
-			return !((validateEmail(inputsData.loginas)||validatePhone(inputsData.loginas)))
-		}
+	const disableButton = ()=>{
+		return !((validateEmail(inputsData.loginas)||validatePhone(inputsData.loginas)))
+	}
 
-		const sendOTP = async()=>{
-			try{
-				dispatch(updateLoading(true))
-				let res = await findUserByNumber({loginId:inputsData.loginas})
-				if(res.status === 200){
-					const confirmation = await auth.signInWithPhoneNumber(`+91${inputsData.loginas}`, new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-						size: 'invisible'}));
-					setConfirmationResult(confirmation);
-					updateUser(res.data.data)
-					dispatch(updateLoading(false))
-					alertNotify(`Code sent to this +91${inputsData.loginas} number`, 200)
-					setShowOtp(true)
-				} else {
-					throw new Error(res)
-				}
-			}catch(error){
-				dispatch(updateLoading(false))
-				APIAlertNotify(error)
-			}
-		}
-
-		const verifyOtp = async() =>{
+	const sendOTP = async()=>{
+		try{
 			dispatch(updateLoading(true))
-			try{
-				await confirmationResult.confirm(otp);
+			let res = await findUserByNumber({loginId:inputsData.loginas})
+			if(res.status === 200){
+				const confirmation = await auth.signInWithPhoneNumber(`+91${inputsData.loginas}`, new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+					size: 'invisible'}));
+				setConfirmationResult(confirmation);
+				updateUser(res.data.data)
 				dispatch(updateLoading(false))
-				setShowPasswordReset(true)
-			}catch(error){
-				console.log(error)
-				dispatch(updateLoading(false))
-				APIAlertNotify(error)
+				alertNotify(`Code sent to this +91${inputsData.loginas} number`, 200)
+				setShowOtp(true)
+			} else {
+				throw new Error(res)
 			}
+		}catch(error){
+			dispatch(updateLoading(false))
+			APIAlertNotify(error)
 		}
+	}
 
-		const verifyPassword = (value, flag=false)=>{
-			const valid = value.length <= 10 && value.length >= 6
-			if(flag){
-				return valid
-			}else{
-				if(!valid){
-					alertNotify(VALIDATION_MESSAGES.INVALID_PASSWORD)
-				}
-			}
+	const verifyOtp = async() =>{
+		dispatch(updateLoading(true))
+		try{
+			await confirmationResult.confirm(otp);
+			dispatch(updateLoading(false))
+			setShowPasswordReset(true)
+		}catch(error){
+			console.log(error)
+			dispatch(updateLoading(false))
+			APIAlertNotify(error)
 		}
-		const verifyConfirmPassword = (value,flag=false) =>{
-			const valid = inputsData.password === inputsData.confirmPassword
-			if(flag){
-				return valid
-			}else{
-				if(!valid){
-					alertNotify(VALIDATION_MESSAGES.PASSWORD_MISMATCH)
-				}
-			}
-		}
-		
-		const validateResetBtn = ()=>{
-			return !((verifyPassword(inputsData.loginas,true)||verifyConfirmPassword(inputsData.loginas,true)))
-		}
+	}
 
-		const resetPassword = async()=>{
-			dispatch(updateLoading(true))
-			try{
-				const res = await updatePassword({userId:user.userId,password:inputsData.password})
-				if(res.status == 200){
-					dispatch(updateLoading(false))
-					alertNotify("Password updated successfully.",200)
-					dispatch(updateModal({key:AppConstants.LOGIN,value:true}))
-				}else{
-					throw new Error(res)
-				}
-			}catch(error){
-				dispatch(updateLoading(false))
-				APIAlertNotify(error)
+	const verifyPassword = (value, flag=false)=>{
+		const valid = value.length <= 10 && value.length >= 6
+		if(flag){
+			return valid
+		}else{
+			if(!valid){
+				alertNotify(VALIDATION_MESSAGES.INVALID_PASSWORD)
 			}
 		}
+	}
+	const verifyConfirmPassword = (value,flag=false) =>{
+		const valid = inputsData.password === value
+		if(flag){
+			return valid
+		}else{
+			if(!valid){
+				alertNotify(VALIDATION_MESSAGES.PASSWORD_MISMATCH)
+			}
+		}
+	}
+	
+	const validateResetBtn = ()=>{
+		return !((verifyPassword(inputsData.password,true)&&verifyConfirmPassword(inputsData.confirmPassword,true)))
+	}
+
+	const resetPassword = async()=>{
+		dispatch(updateLoading(true))
+		try{
+			const res = await updatePassword({userId:user.userId,password:inputsData.password})
+			if(res.status == 200){
+				dispatch(updateLoading(false))
+				alertNotify("Password updated successfully.",200)
+				dispatch(updateModal({key:AppConstants.LOGIN,value:true}))
+				reset()
+			}else{
+				throw new Error(res)
+			}
+		}catch(error){
+			dispatch(updateLoading(false))
+			APIAlertNotify(error)
+		}
+	}
 	return(
 		<Modal centered show={show} onHide={handleHide} className='signup-modal'>
 			<Modal.Header closeButton></Modal.Header>
@@ -144,13 +152,13 @@ import { updateLoading, updateModal } from "../../app/reducers/userSlice";
 						<h1 className='signup-modal-title'>Reset Password</h1>
 						<div className='signup-form-blk'>
 							<Form>
-								<Form.Group className="mb-3" controlId="email">
+								<Form.Group className="mb-3" controlId="password">
 									<Form.Label>Password</Form.Label>
-									<Form.Control type="text" placeholder="Password" onChange={handleChange} value={inputsData.password} name="password" onBlur={verifyPassword} />
+									<Form.Control type="text" placeholder="Password" onChange={handleChange} value={inputsData.password} name="password" onBlur={(e)=>verifyPassword(e.target.value)} />
 								</Form.Group>
-								<Form.Group className="mb-3" controlId="email">
+								<Form.Group className="mb-3" controlId="confirmPassword">
 									<Form.Label>Confirm Password</Form.Label>
-									<Form.Control type="text" placeholder="Confirm Password" onChange={handleChange} value={inputsData.confirmPassword} name="confirmPassword" onBlur={verifyConfirmPassword} />
+									<Form.Control type="text" placeholder="Confirm Password" onChange={handleChange} value={inputsData.confirmPassword} name="confirmPassword" onBlur={(e)=>verifyConfirmPassword(e.target.value)} />
 								</Form.Group>
 								<Button type="button" className='aoi-primary-btn full-btn' onClick={resetPassword} disabled={validateResetBtn()||isLoading}>Reset</Button>
 							</Form>
@@ -163,7 +171,7 @@ import { updateLoading, updateModal } from "../../app/reducers/userSlice";
 						<h1 className='signup-modal-title'>Forgot Password</h1>
 						<div className='signup-form-blk'>
 							<Form>
-								<Form.Group className="mb-3" controlId="email">
+								<Form.Group className="mb-3" controlId="loginas">
 									<Form.Label>Phone</Form.Label>
 									<Form.Control type="text" placeholder="Enter phone number" onChange={handleChange} value={inputsData.loginas} name="loginas" onBlur={verifyInput} />
 								</Form.Group>

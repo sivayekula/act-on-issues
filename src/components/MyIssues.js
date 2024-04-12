@@ -21,21 +21,23 @@ function MyIssues() {
     }
 
     const getIssues= async ()=> {
+        if(authUser?.userId){
         try{
-            let res= await getMyIssues(authUser.userId)
+            let res= await getMyIssues(authUser.userId) 
             if(res.status === 200){
-                setIssues(res.data.data)
+                setIssues(res.data.data.data)
             } else {
                 throw new Error(res)
             }
         }catch(err) {
+            console.log(err)
             APIAlertNotify(err)
-        }
+        }}
     }
     
       useEffect(()=>{
         getIssues()
-      },[])
+      },[authUser])
 	return (
 		<div className='main-page'>
 			<Header />
@@ -71,7 +73,7 @@ function MyIssues() {
                                             className="issue-type-icon"
                                             alt="news title image"
                                         />
-                                        <span className='issue-type-info-txt'>{issue.categoryId.name}</span>
+                                        <span className='issue-type-info-txt'>{issue.categories?.name}</span>
                                     </div>
                                     <div className='issue-icon-item d-flex align-items-center aoi-gap-off'>
                                         <img
@@ -79,7 +81,7 @@ function MyIssues() {
                                             className="issue-type-icon"
                                             alt="news title image"
                                         />
-                                        <span className='issue-type-info-txt'>{issue.address.label}</span>
+                                        <span className='issue-type-info-txt'>{issue.address?.label}</span>
                                     </div>
                                 </div>
                                 <div className='issue-card-description-blk'>

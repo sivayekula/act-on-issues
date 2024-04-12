@@ -312,7 +312,7 @@ function Home() {
                         </NavDropdown.Item>
                         <NavDropdown.Item className='datepicker-input-blk d-flex'>
                           <Form.Label className='font-size14 black-text'>End Date</Form.Label> 
-                          <DatePicker showIcon selected={endDate} onChange={(date) => setEndtDate(date)} maxDate={today} disabled={startDate==""}/>
+                          <DatePicker showIcon selected={endDate} onChange={(date) => setEndtDate(date)} minDate={startDate} maxDate={today} disabled={startDate==""}/>
                         </NavDropdown.Item>
                         <div className="mob-filters-btns-blk">
                             <Button className='aoi-primary-btn date-picker-btns' onClick={handleDateFilters} disabled={startDate==""||endDate==''}>Apply</Button>
@@ -339,7 +339,7 @@ function Home() {
                                             alt="news title image"
                                         />
                                         <span className='issue-type-info-txt'>
-                                          <span>{`by ${issue.userId.name} - ${getTime(issue.created_at)}`}
+                                          <span>{`by ${issue.users?.name} - ${getTime(issue.created_at)}`}
                                           </span>
                                         </span>
                                     </div>
@@ -349,7 +349,7 @@ function Home() {
                                             className="issue-type-icon"
                                             alt="news title image"
                                         />
-                                        <span className='issue-type-info-txt'>{issue.categoryId.name}</span>
+                                        <span className='issue-type-info-txt'>{issue.categories?.name}</span>
                                     </div>
                                     <div className='issue-icon-item d-flex align-items-center aoi-gap-off'>
                                         <img
@@ -357,7 +357,7 @@ function Home() {
                                             className="issue-type-icon"
                                             alt="news title image"
                                         />
-                                        <span className='issue-type-info-txt'>{issue.address.label.split(",")[0]}</span>
+                                        <span className='issue-type-info-txt'>{issue.address?.label.split(",")[0]}</span>
                                     </div>
                                 </div>
                                 <div className='issue-card-description-blk'>
@@ -371,7 +371,7 @@ function Home() {
                                     className="issue-card-img"
                                     alt="news title image"
                                   />
-                                    <span className='imgs-count samll-size'>{issue.images.length}</span>
+                                    <span className='imgs-count samll-size'>{issue.images?.length}</span>
                                     {issue.status === "resolved" &&
                                       <img 
                                           src="./GreenTick.svg"
@@ -396,7 +396,7 @@ function Home() {
                                             className="card-flag-icon"
                                             alt="news title image"
                                         />
-                                        <span className='issue-type-info-txt'><span>iSupport</span><span>({issue.likesCount})</span></span>
+                                        <span className='issue-type-info-txt'><span>iSupport</span><span>({issue.flags.length})</span></span>
                                       </div>
                                     <div className='issue-icon-item d-flex align-items-center aoi-gap-off' onClick={()=>{gotoDetails(issue._id)}}>
                                         <img
@@ -424,8 +424,11 @@ function Home() {
                       )
                     })}
                   </div>
-                  {/* <PaginationComponent 
-                  totalItems={totalRecords} itemsPerPage={itemsPerPage} onPageChange={onPageChange}/> */}
+                  {totalRecords>10&&
+                  <div className='pagination-align'>
+                    <PaginationComponent 
+                    totalItems={totalRecords} itemsPerPage={itemsPerPage} onPageChange={onPageChange}/>
+                  </div>}
                 </div>
 
                 <div className='right-news-slider-main-blk d-flex flex-column aoi-gap-1'>
