@@ -1112,3 +1112,8 @@ background-color: var(--white-color);
   margin-top: 15px;
   float: right;
 }
+
+button.close{
+  font-size: 15px;
+  color:red;
+}

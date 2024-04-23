@@ -228,6 +228,7 @@ function Profile() {
 									<Form.Control 
 										type="file" 
 										onChange={handleFiles} 
+										value=""
 										accept= '.png, .jpeg, .jpg'
 										name="identity_proof"/>
 								</Form.Group>
@@ -237,8 +238,7 @@ function Profile() {
 									<img
 										src={idFiles}
 										className="news-img"
-										alt="ID Proof"
-										/>
+										alt="ID Proof"/>
 									</div>
 								</Form.Group>}
 

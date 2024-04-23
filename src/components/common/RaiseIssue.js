@@ -113,6 +113,11 @@ const RaiseIssue = ({show, handleClose}) =>{
     return result
   }
 
+  const removeImg = (imgInd)=>{
+    const tmpImgs = issueObj.images.filter((img,ind)=>ind!==imgInd)
+    setIsueObj({...issueObj, images:tmpImgs})
+  }
+
    
 
   return(<>
@@ -171,12 +176,16 @@ const RaiseIssue = ({show, handleClose}) =>{
                   <Form.Control type="file" 
                     accept= '.png, .jpeg, .jpg'
                     onChange={handleFiles} 
+                    value=""
                     multiple />
                 </Form.Group>
                 {issueObj.images.length>0&&
                 <Form.Group className="mb-3">
-                  {issueObj.images.map(file=>(
+                  {issueObj.images.map((file,ind)=>(
                     <div className='news-img-blk img-align' key={file}>
+                      <button type="button" class="close" aria-label="Close" onClick={()=>removeImg(ind)}>
+                        <span aria-hidden="true">&times;</span>
+                      </button>
                       <img
                         src={file}
                         className="news-img"
