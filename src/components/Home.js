@@ -80,9 +80,7 @@ function Home() {
     if(startDate&&endDate){
       params = `${params}&startDate=${moment(startDate).format("YYYY-MM-DD")}&endDate=${moment(endDate).format("YYYY-MM-DD")}`
     }
-     
     dispatch(fecthIssues(params))
-     
   },[status, locFilter, currentPage])
 
   const handleDateFilters = () =>{
@@ -105,7 +103,6 @@ function Home() {
         params = `${params}&lat=${latLng.lat}&lng=${latLng.lng}`
       }
       dispatch(fecthIssues(params))
-      
     }
     setStartDate("");
     setEndtDate("")
@@ -114,11 +111,12 @@ function Home() {
  
   const onPageChange = (page) => {
     setCurrentPage(page);
+    setSearchKey("")
   };
 
   const handleSearch = (e)=>{
     setSearchKey(e.target.value)
-    let dumyList = data.filter(issue=>(issue?.categoryId?.name.toLowerCase().includes(e.target.value.toLowerCase())))
+    let dumyList = data.filter(issue=>(issue?.categories?.name.toLowerCase().includes(e.target.value.toLowerCase())))
     setIssues(dumyList)
   }
   
@@ -436,7 +434,7 @@ function Home() {
                      <div className='news-img-slider-blk'>
                       <Carousel interval={null}>
                         {swatchBharathIssuses.map(issue=>(
-                          <Carousel.Item>
+                          <Carousel.Item onClick={()=>{gotoDetails(issue._id)}}>
                             <img
                               className="d-block w-100"
                               src={process.env.REACT_APP_PROFILE_URL+"/issues/"+issue.images[0]}
@@ -450,7 +448,7 @@ function Home() {
                         </Carousel>
                      </div>}
                      {generalIssues.length>0&&
-                     <div className='news-img-slider-blk'>
+                     <div className='news-img-slider-blk'>dfd
                       <Carousel interval={null}>
                         {generalIssues.map(issue=>(
                           <Carousel.Item>
